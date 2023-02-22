@@ -3,6 +3,8 @@ const express = require("express");
 const { default: mongoose } = require("mongoose");
 const userRouter = require("./routes/UserRoute");
 const authRouter = require("./routes/Auth");
+const postRouter = require("./routes/PostRoute");
+// const commentRouter = require("./routes/CommentRoute");
 
 var jwt = require("jsonwebtoken");
 
@@ -15,7 +17,7 @@ app.use(cors());
 
 const http = require("http");
 const server = http.createServer(app);
-
+mongoose.set("strictQuery", true);
 let privateKey = process.env.PRIVATE_KEY;
 
 // app.use((req, res, next) => {
@@ -56,6 +58,8 @@ mongoose
 
 app.use("/api/users", userRouter);
 app.use("/auth", authRouter);
+app.use("/api/posts", postRouter);
+// app.use("/api/posts/comment", commentRouter);
 
 server.listen(8080, () => {
   console.log("listening on *:8080");

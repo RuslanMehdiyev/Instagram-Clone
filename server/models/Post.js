@@ -20,6 +20,10 @@ const postSchema = new Schema(
         ref: "User",
       },
     ],
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
     comments: [
       {
         user: {
