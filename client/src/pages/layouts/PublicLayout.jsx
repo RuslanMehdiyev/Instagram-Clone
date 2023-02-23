@@ -5,7 +5,7 @@ import { authContext } from "../../store/AuthContext";
 function PublicLayout() {
   const { loginStatus } = useContext(authContext);
 
-  if (loginStatus) return <Navigate to="/explore" />;
+  if (loginStatus) return <Navigate to="/admin/explore" />;
 
   return (
     <>

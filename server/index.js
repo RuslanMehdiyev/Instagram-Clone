@@ -4,7 +4,6 @@ const { default: mongoose } = require("mongoose");
 const userRouter = require("./routes/UserRoute");
 const authRouter = require("./routes/Auth");
 const postRouter = require("./routes/PostRoute");
-// const commentRouter = require("./routes/CommentRoute");
 
 var jwt = require("jsonwebtoken");
 
@@ -21,7 +20,12 @@ mongoose.set("strictQuery", true);
 let privateKey = process.env.PRIVATE_KEY;
 
 // app.use((req, res, next) => {
-//   if (req.url == "/api/users/login" || req.url == "/api/users/confirmCode") {
+//   console.log(req);
+//   if (
+//     req.url == "api/auth/login" ||
+//     req.url == "api/auth/confirm" ||
+//     req.url == "api/auth/register"
+//   ) {
 //     return next();
 //   }
 
@@ -40,6 +44,7 @@ let privateKey = process.env.PRIVATE_KEY;
 
 //   jwt.verify(token, privateKey, function (err, decode) {
 //     if (err) {
+//       console.log(err);
 //       res.status(401).json(err);
 //     } else {
 //       next();
@@ -57,7 +62,7 @@ mongoose
   });
 
 app.use("/api/users", userRouter);
-app.use("/auth", authRouter);
+app.use("/api/auth", authRouter);
 app.use("/api/posts", postRouter);
 // app.use("/api/posts/comment", commentRouter);
 
