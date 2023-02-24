@@ -19,38 +19,47 @@ const server = http.createServer(app);
 mongoose.set("strictQuery", true);
 let privateKey = process.env.PRIVATE_KEY;
 
-// app.use((req, res, next) => {
-//   console.log(req);
-//   if (
-//     req.url == "api/auth/login" ||
-//     req.url == "api/auth/confirm" ||
-//     req.url == "api/auth/register"
-//   ) {
-//     return next();
-//   }
+app.use((req, res, next) => {
+  if (
+    req.url === "/api/auth/login" ||
+    req.url === "/api/auth/confirm" ||
+    req.url === "/api/auth/register"
+  ) {
+    return next();
+  }
 
-//   let auth = req.headers.authorization?.split(" ");
-//   let token = "";
+  let auth = req.headers.authorization?.split(" ");
+  let token = "";
+  if (auth) {
+    if (auth.length === 2) {
+      token = auth[1];
+    } else {
+      return res.status(401).json({ message: "Access Error!" });
+    }
+  } else {
+    return res.status(401).json({ message: "Access Error!" });
+  }
 
-//   if (auth) {
-//     if (auth.length == 2) {
-//       token = auth[1];
-//     } else {
-//       res.status(401).json({ message: "Access Error!" });
-//     }
-//   } else {
-//     res.status(401).json({ message: "Access Error!" });
-//   }
+  jwt.verify(token, privateKey, function (err, decode) {
+    if (err) {
+      return res.status(401).json(err);
+    } else {
+      const newToken = jwt.sign({ email: decode.email }, privateKey, {
+        expiresIn: "5h",
+      });
+      res.locals.token = newToken;
+      next();
+    }
+  });
+});
 
-//   jwt.verify(token, privateKey, function (err, decode) {
-//     if (err) {
-//       console.log(err);
-//       res.status(401).json(err);
-//     } else {
-//       next();
-//     }
-//   });
-// });
+// middleware for send a new token in the response header if the original token has expired
+app.use((req, res, next) => {
+  if (res.locals.token) {
+    res.setHeader("Authorization", `Bearer ${res.locals.token}`);
+  }
+  next();
+});
 
 mongoose
   .connect(process.env.DB_URL)
@@ -64,7 +73,6 @@ mongoose
 app.use("/api/users", userRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/posts", postRouter);
-// app.use("/api/posts/comment", commentRouter);
 
 server.listen(8080, () => {
   console.log("listening on *:8080");

@@ -33,6 +33,7 @@ export default function Login() {
     api
       .add("/auth/login", data)
       .then((res) => {
+        console.log(res);
         navigate("confirm", { state: { userId: res._id } });
       })
       .catch((err) => {
