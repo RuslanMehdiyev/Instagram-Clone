@@ -41,6 +41,12 @@ const userSchema = new Schema({
       ref: "User",
     },
   ],
+  savedPosts: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Post",
+    },
+  ],
   confirmCode: {
     type: String,
   },

@@ -14,6 +14,7 @@ import { registerValidation } from "../../validations/validation";
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
 import { api } from "../../network/api";
+import Copyright from "../../components/copyright/Copyright";
 
 function Registration() {
   const {
@@ -150,27 +151,6 @@ function Registration() {
       </Box>
       <Copyright sx={{ mt: 8, mb: 4 }} />
     </Container>
-  );
-}
-
-function Copyright(props) {
-  return (
-    <Typography
-      variant="body2"
-      color="text.secondary"
-      align="center"
-      {...props}
-    >
-      {"Copyright © "}
-      <Link
-        color="inherit"
-        target={"_blank"}
-        href="https://www.linkedin.com/in/ruslan-mehdiyev/"
-      >
-        Ruslan Mehdiyev
-      </Link>{" "}
-      {new Date().getFullYear()}
-    </Typography>
   );
 }
 

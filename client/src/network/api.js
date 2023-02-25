@@ -14,7 +14,7 @@ export const api = {
         response = res.data;
       })
       .catch((err) => {
-        if (err.response.status == 401) window.location.href = "/";
+        if (err.response?.status == 401) window.location.href = "/";
       });
     return response;
   },

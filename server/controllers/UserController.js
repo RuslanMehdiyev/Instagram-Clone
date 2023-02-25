@@ -138,6 +138,31 @@ const userController = {
       }
     );
   },
+  savePost: async (req, res) => {
+    const { userId, postId } = req.params;
+    try {
+      const user = await userModel.findById(userId);
+      const post = await userModel.findById(postId);
+
+      if (!user || !post) {
+        return res.status(404).json({ message: "User or post not found" });
+      }
+
+      const postIndex = user.savedPosts.indexOf(postId);
+      if (postIndex === -1) {
+        user.savedPosts.push(postId);
+      } else {
+        user.savedPosts.splice(postIndex, 1);
+      }
+
+      await user.save();
+
+      res.json({ message: "Post saved successfully" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Server error" });
+    }
+  },
 };
 
 module.exports = {
