@@ -1,14 +1,13 @@
-import * as React from "react";
 import {
   Button,
   CssBaseline,
   TextField,
-  Link,
   Paper,
   Box,
   Grid,
   Typography,
 } from "@mui/material";
+import { Link } from "react-router-dom";
 import Icon from "../../assets/images/instaicon.png";
 import { loginValidation } from "../../validations/validation";
 import { useForm } from "react-hook-form";
@@ -43,104 +42,100 @@ export default function Login() {
   };
 
   return (
-    <Box width="70%" margin="0 auto">
-      <Grid container component="main" sx={{ height: "100vh" }}>
-        <Box width={"100%"} display={"flex"} gap={"1rem"}>
-          <CssBaseline />
-          <ToastContainer />
-          <Grid
-            item
-            xs={false}
-            sm={4}
-            md={7}
+    <Box width={{ xs: "100%", sm: "90%", md: "80%" }} margin="0 auto">
+      <Grid
+        container
+        component="main"
+        sx={{ height: "100vh" }}
+        pt="3rem"
+        borderRadius={"1rem"}
+      >
+        <CssBaseline />
+        <ToastContainer />
+        <Grid
+          height={"90%"}
+          item
+          xs={false}
+          sm={6}
+          md={7}
+          sx={{
+            backgroundImage: "url(https://source.unsplash.com/random)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        />
+        <Grid
+          height={"90%"}
+          item
+          xs={12}
+          sm={6}
+          md={5}
+          component={Paper}
+          elevation={6}
+          square
+        >
+          <Box
             sx={{
-              backgroundImage: "url(https://source.unsplash.com/random)",
-              backgroundRepeat: "no-repeat",
-              backgroundColor: (t) =>
-                t.palette.mode === "light"
-                  ? t.palette.grey[50]
-                  : t.palette.grey[900],
-              backgroundSize: "cover",
-              backgroundPosition: "center",
+              my: 8,
+              mx: 4,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
             }}
-          />
-          <Grid
-            item
-            xs={12}
-            sm={8}
-            md={5}
-            component={Paper}
-            elevation={6}
-            square
           >
+            <img src={Icon} alt="" style={{ width: "50px" }} />
+            <Typography component="h1" variant="h5">
+              Instagram-Clone
+            </Typography>
             <Box
-              sx={{
-                my: 8,
-                mx: 4,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
+              component="form"
+              noValidate
+              onSubmit={handleSubmit(onSubmit)}
+              sx={{ mt: 1 }}
             >
-              <img src={Icon} alt="" style={{ width: "50px" }} />
-              <Typography component="h1" variant="h5">
-                Instagram-Clone
-              </Typography>
-              <Box
-                component="form"
-                noValidate
-                onSubmit={handleSubmit(onSubmit)}
-                sx={{ mt: 1 }}
+              <TextField
+                margin="normal"
+                fullWidth
+                id="email"
+                label="Email Address"
+                name="email"
+                autoComplete="email"
+                autoFocus
+                {...register("email")}
+                error={!!errors.email}
+                helperText={errors.email?.message}
+              />
+              <TextField
+                margin="normal"
+                fullWidth
+                name="password"
+                label="Password"
+                type="password"
+                id="password"
+                autoComplete="current-password"
+                {...register("password")}
+                error={!!errors.password}
+                helperText={errors.password?.message}
+              />
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                sx={{ mt: 3, mb: 2 }}
               >
-                <TextField
-                  margin="normal"
-                  fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  autoComplete="email"
-                  autoFocus
-                  {...register("email")}
-                  error={!!errors.email}
-                  helperText={errors.email?.message}
-                />
-                <TextField
-                  margin="normal"
-                  fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
-                  id="password"
-                  autoComplete="current-password"
-                  {...register("password")}
-                  error={!!errors.password}
-                  helperText={errors.password?.message}
-                />
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  sx={{ mt: 3, mb: 2 }}
-                >
-                  Sign In
-                </Button>
-                <Grid container>
-                  {/* <Grid item xs>
-                    <Link href="#" variant="body2">
-                      Forgot password?
-                    </Link>
-                  </Grid> */}
-                  <Grid item>
-                    <Link href="/register" variant="body2">
-                      {"Don't have an account? Sign Up"}
-                    </Link>
-                  </Grid>
+                Sign In
+              </Button>
+              <Grid container>
+                <Grid item>
+                  <Link to={"/register"}>
+                    {"Don't have an account? Sign Up"}
+                  </Link>
                 </Grid>
-                <Copyright sx={{ mt: 5 }} />
-              </Box>
+              </Grid>
+              <Copyright sx={{ mt: 5 }} />
             </Box>
-          </Grid>
-        </Box>
+          </Box>
+        </Grid>
       </Grid>
     </Box>
   );

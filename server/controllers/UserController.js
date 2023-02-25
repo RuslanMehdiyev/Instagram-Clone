@@ -5,7 +5,7 @@ const userController = {
   getAll: (req, res) => {
     userModel
       .find({ isDeleted: false })
-      .select("_id name email")
+      .select("_id fullName userName  email")
       .exec((err, docs) => {
         if (!err) {
           res.json(docs);
@@ -29,12 +29,13 @@ const userController = {
     });
   },
   update: (req, res) => {
-    const { name, email, password } = req.body;
+    const { fullName, userName, email, password } = req.body;
     const id = req.params.id;
     userModel.findById(id, (err, doc) => {
       if (!err) {
         if (doc) {
-          doc.name = name;
+          doc.name = fullName;
+          doc.userName = userName;
           doc.email = email;
           if (password) {
             bcrypt.hash(password, 10, (err, hash) => {

@@ -2,6 +2,7 @@ const userModel = require("../models/User");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt");
+const dns = require("dns");
 let privateKey = process.env.PRIVATE_KEY;
 
 const transporter = nodemailer.createTransport({
@@ -17,33 +18,57 @@ const transporter = nodemailer.createTransport({
 
 const authController = {
   register: (req, res) => {
-    const { name, email, password } = req.body;
-    userModel.findOne({ email: email }, (err, user) => {
-      if (err) {
-        res
-          .status(500)
-          .json({ message: "An error occurred while checking the email." });
-      } else if (user) {
-        res.status(400).json({ message: "This email is already registered." });
+    const { fullName, userName, email, password } = req.body;
+    const domain = email.split("@")[1];
+    dns.resolveMx(domain, (err, addresses) => {
+      if (err || addresses.length === 0) {
+        res.status(400).json({ message: "Invalid email domain" });
       } else {
-        bcrypt.hash(password, 10, (err, hash) => {
+        userModel.findOne({ email: email }, (err, userEmail) => {
           if (err) {
-            res.status(500).json({
-              message: "An error occurred while hashing the password.",
-            });
+            return res
+              .status(500)
+              .json({ message: "An error occurred while checking the email." });
+          } else if (userEmail) {
+            return res
+              .status(400)
+              .json({ message: "This email is already registered." });
           } else {
-            const newUser = new userModel({
-              name: name,
-              email: email,
-              password: hash,
-            });
-            newUser.save((err, doc) => {
+            userModel.findOne({ userName: userName }, (err, userUserName) => {
               if (err) {
-                res.status(500).json({
-                  message: "An error occurred while saving the user.",
+                return res.status(500).json({
+                  message: "An error occurred while checking the username.",
                 });
+              } else if (userUserName) {
+                return res
+                  .status(400)
+                  .json({ message: "This username is already registered." });
               } else {
-                res.json(doc);
+                bcrypt.hash(password, 10, (err, hash) => {
+                  if (err) {
+                    return res.status(500).json({
+                      message: "An error occurred while hashing the password.",
+                    });
+                  } else {
+                    const newUser = new userModel({
+                      fullName: fullName,
+                      userName: userName,
+                      email: email,
+                      password: hash,
+                    });
+                    newUser.save((err, doc) => {
+                      if (err) {
+                        return res.status(500).json({
+                          message: "An error occurred while saving the user.",
+                        });
+                      } else {
+                        return res
+                          .status(201)
+                          .json({ message: "User successfully registered." });
+                      }
+                    });
+                  }
+                });
               }
             });
           }
