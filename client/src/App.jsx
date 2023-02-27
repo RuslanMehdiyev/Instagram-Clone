@@ -8,6 +8,8 @@ import ProtectedLayout from "./pages/layouts/ProtectedLayout";
 import Explore from "./pages/explore/Explore";
 import Home from "./pages/home/Home";
 import Direct from "./pages/direct/Direct";
+import SavedPosts from "./pages/saved/SavedPosts";
+import Account from "./pages/account/Account";
 
 function App() {
   return (
@@ -19,10 +21,12 @@ function App() {
           <Route path="/register" element={<Register />} />
         </Route>
 
-        <Route path="/user" element={<ProtectedLayout />}>
+        <Route path="/" element={<ProtectedLayout />}>
           <Route path="home" element={<Home />} />
           <Route path="explore" element={<Explore />} />
           <Route path="direct" element={<Direct />} />
+          <Route path="saved" element={<SavedPosts />} />
+          <Route path="account" element={<Account />} />
         </Route>
       </Routes>
     </>

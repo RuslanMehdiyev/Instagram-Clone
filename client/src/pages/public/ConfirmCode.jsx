@@ -21,7 +21,6 @@ function ConfirmCode() {
         userId: location.state.userId,
       })
       .then((res) => {
-        console.log(res);
         localStorage.setItem("token", `${res.token}`);
         setLoginStatus(true);
       })
