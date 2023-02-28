@@ -17,6 +17,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
 import { api } from "../../network/api";
 import Copyright from "../../components/copyright/Copyright";
+import { authContext } from "../../store/AuthContext";
+import { useContext } from "react";
 
 export default function Login() {
   const {
@@ -33,7 +35,7 @@ export default function Login() {
     api
       .add("/auth/login", data)
       .then((res) => {
-        console.log(res);
+        localStorage.setItem("user", JSON.stringify(res));
         navigate("confirm", { state: { userId: res._id } });
       })
       .catch((err) => {

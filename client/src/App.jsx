@@ -10,6 +10,7 @@ import Home from "./pages/home/Home";
 import Direct from "./pages/direct/Direct";
 import SavedPosts from "./pages/saved/SavedPosts";
 import Account from "./pages/account/Account";
+import CreatePost from "./pages/create/CreatePost";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           <Route path="direct" element={<Direct />} />
           <Route path="saved" element={<SavedPosts />} />
           <Route path="account" element={<Account />} />
+          <Route path="create" element={<CreatePost />} />
         </Route>
       </Routes>
     </>
