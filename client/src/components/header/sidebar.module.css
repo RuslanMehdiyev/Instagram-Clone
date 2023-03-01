@@ -8,6 +8,9 @@
   display: flex;
   justify-content: space-around;
   flex-direction: column;
+  /* position: fixed;
+  left: 0;
+  top: 0; */
 }
 .logo {
   font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",

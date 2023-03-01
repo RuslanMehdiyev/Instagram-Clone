@@ -20,6 +20,8 @@ const server = http.createServer(app);
 mongoose.set("strictQuery", true);
 let privateKey = process.env.PRIVATE_KEY;
 
+app.use("/api/uploads", express.static("uploads"));
+
 app.use((req, res, next) => {
   if (
     req.url === "/api/auth/login" ||
@@ -76,7 +78,6 @@ app.use("/api/users", userRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/posts", postRouter);
 app.use("/api/upload", imageRouter);
-app.use("/api/uploads", express.static("uploads"));
 
 server.listen(8080, () => {
   console.log("listening on *:8080");

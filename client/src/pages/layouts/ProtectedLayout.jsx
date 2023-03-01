@@ -1,6 +1,7 @@
 import { Box } from "@mui/system";
 import { Outlet } from "react-router-dom";
 import Sidebar from "../../components/header/Sidebar";
+import requireAuth from "../../components/HOC/requireAuth ";
 
 function ProtectedLayout() {
   return (
@@ -8,9 +9,9 @@ function ProtectedLayout() {
       <Box
         width={"100%"}
         sx={{
-          display: "block", // default to block display for phone and tablet screens
+          display: "block",
           "@media screen and (min-width: 770px)": {
-            display: "flex", // switch to flex display for larger screens
+            display: "flex",
           },
         }}
       >
@@ -21,4 +22,4 @@ function ProtectedLayout() {
   );
 }
 
-export default ProtectedLayout;
+export default requireAuth(ProtectedLayout);

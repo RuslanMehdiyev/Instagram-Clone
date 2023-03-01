@@ -14,6 +14,7 @@ export const api = {
         response = res.data;
       })
       .catch((err) => {
+        localStorage.removeItem("user");
         if (err.response?.status == 401) window.location.href = "/";
       });
     return response;

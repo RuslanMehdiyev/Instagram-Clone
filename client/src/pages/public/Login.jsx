@@ -17,8 +17,6 @@ import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
 import { api } from "../../network/api";
 import Copyright from "../../components/copyright/Copyright";
-import { authContext } from "../../store/AuthContext";
-import { useContext } from "react";
 
 export default function Login() {
   const {

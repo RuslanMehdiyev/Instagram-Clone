@@ -60,7 +60,7 @@ const Sidebar = () => {
       >
         <Avatar src="" alt="Ruslan" />
         <Typography className={headerStyle.sidebarLink}>
-          {user.userName}
+          {user?.userName}
         </Typography>
       </NavLink>
     </Box>
