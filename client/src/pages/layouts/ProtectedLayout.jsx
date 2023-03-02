@@ -12,7 +12,11 @@ function ProtectedLayout() {
           display: "block",
           "@media screen and (min-width: 770px)": {
             display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: "1rem",
           },
+          "@media screen and (max-width: 770px)": { marginTop: "5rem" },
         }}
       >
         <Sidebar />

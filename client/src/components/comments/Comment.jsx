@@ -15,11 +15,15 @@ export const Comment = ({ comment, onLike, onReply }) => {
   };
 
   const handleReply = () => {
-    setShowReplyForm(true);
+    setShowReplyForm(!showReplyForm);
   };
 
   const handleReplySubmit = (e) => {
     e.preventDefault();
+    if (replyText.trim().length == 0) {
+      setReplyText("");
+      return;
+    }
     const newReply = {
       id: new Date().getTime(),
       text: replyText,
@@ -46,7 +50,9 @@ export const Comment = ({ comment, onLike, onReply }) => {
               <FavoriteBorderOutlinedIcon />
             )}
           </IconButton>
-          <Typography variant="caption">{comment.likes} likes</Typography>
+          <Typography variant="caption">
+            {comment.likes} {comment.likes > 1 ? "Likes" : "Like"}
+          </Typography>
         </Box>
         <Box mr="0.5rem">
           <Typography variant="subtitle2">{comment.text}</Typography>
@@ -69,7 +75,9 @@ export const Comment = ({ comment, onLike, onReply }) => {
             <IconButton>
               <FavoriteBorderOutlinedIcon />
             </IconButton>
-            <Typography variant="caption">{reply.likes} likes</Typography>
+            <Typography variant="caption">
+              {reply.likes} {reply.likes > 1 ? "Likes" : "Like"}
+            </Typography>
           </Box>
           <Box mr="0.5rem">
             <Typography variant="subtitle2">{reply.text}</Typography>
@@ -85,9 +93,10 @@ export const Comment = ({ comment, onLike, onReply }) => {
               onChange={(e) => setReplyText(e.target.value)}
               fullWidth
               margin="normal"
+              required
             />
             <Button type="submit" variant="contained" color="primary">
-              Post
+              Reply
             </Button>
           </form>
         </Box>
@@ -101,6 +110,10 @@ export const CommentForm = ({ onSubmit }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (text.trim().length == 0) {
+      setText("");
+      return;
+    }
     onSubmit(text);
     setText("");
   };
@@ -113,37 +126,11 @@ export const CommentForm = ({ onSubmit }) => {
         onChange={(e) => setText(e.target.value)}
         fullWidth
         margin="normal"
+        required
       />
       <Button type="submit" variant="contained" color="primary">
-        Post
+        Add
       </Button>
     </form>
-  );
-};
-
-export const ReplyForm = ({ commentId, onSubmit }) => {
-  const [text, setText] = useState("");
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSubmit(text);
-    setText("");
-  };
-
-  return (
-    <Box ml="1rem" mt="0.5rem">
-      <form onSubmit={handleSubmit}>
-        <TextField
-          label="Reply to this comment..."
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          fullWidth
-          margin="normal"
-        />
-        <Button type="submit" variant="contained" color="primary">
-          Post
-        </Button>
-      </form>
-    </Box>
   );
 };

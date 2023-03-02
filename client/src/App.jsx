@@ -9,8 +9,8 @@ import Explore from "./pages/explore/Explore";
 import Home from "./pages/home/Home";
 import Direct from "./pages/direct/Direct";
 import SavedPosts from "./pages/saved/SavedPosts";
-import Account from "./pages/account/Account";
 import CreatePost from "./pages/create/CreatePost";
+import Profile from "./pages/profile/Profile";
 
 function App() {
   return (
@@ -27,7 +27,7 @@ function App() {
           <Route path="explore" element={<Explore />} />
           <Route path="direct" element={<Direct />} />
           <Route path="saved" element={<SavedPosts />} />
-          <Route path="account" element={<Account />} />
+          <Route path="profile/:id" element={<Profile />} />
           <Route path="create" element={<CreatePost />} />
         </Route>
       </Routes>

@@ -13,16 +13,22 @@ import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlin
 import MoreHorizOutlinedIcon from "@mui/icons-material/MoreHorizOutlined";
 import BookmarkBorderOutlinedIcon from "@mui/icons-material/BookmarkBorderOutlined";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Box } from "@mui/system";
 import { Comment, CommentForm } from "../comments/Comment";
+import { api } from "../../network/api";
+import { useNavigate } from "react-router-dom";
 
-const PostCard = ({ username, imageUrl, caption, likes, saved }) => {
+const PostCard = ({ post }) => {
+  const [user, setUser] = useState([]);
   const [isLiked, setIsLiked] = useState(false);
-  const [isSaved, setIsSaved] = useState(saved);
+  const [isSaved, setIsSaved] = useState(false);
   const [comments, setComments] = useState([]);
   const [replyTo, setReplyTo] = useState(null);
-
+  const navigate = useNavigate();
+  useEffect(() => {
+    api.getAll("/users/" + post.user._id).then((res) => setUser(res));
+  }, [post?.user._id]);
   const handleLike = () => {
     setIsLiked(!isLiked);
   };
@@ -51,7 +57,9 @@ const PostCard = ({ username, imageUrl, caption, likes, saved }) => {
     <Box mt={"1rem"} p="1rem" maxWidth={"500px"}>
       <Card>
         <CardHeader
-          title={username}
+          onClick={() => navigate("/profile/" + user._id)}
+          style={{ cursor: "pointer" }}
+          title={user.userName}
           action={
             <IconButton>
               <MoreHorizOutlinedIcon />
@@ -61,15 +69,9 @@ const PostCard = ({ username, imageUrl, caption, likes, saved }) => {
         <CardMedia
           style={{ width: "100%", height: "400px" }}
           component="img"
-          image={imageUrl}
-          alt={caption}
+          image={post.image}
+          alt={post.caption}
         />
-        <CardContent>
-          <Typography>
-            <strong>{username.substring(0, 5)} </strong>
-            {caption}
-          </Typography>
-        </CardContent>
         <CardActions disableSpacing>
           <IconButton onClick={handleLike}>
             {isLiked ? (
@@ -78,11 +80,19 @@ const PostCard = ({ username, imageUrl, caption, likes, saved }) => {
               <FavoriteBorderOutlinedIcon />
             )}
           </IconButton>
+          <Typography>
+            {post.likes} {post.likes > 1 ? "Likes" : "Like"}
+          </Typography>
           <IconButton onClick={handleSave}>
             {isSaved ? <BookmarkIcon /> : <BookmarkBorderOutlinedIcon />}
           </IconButton>
-          <Typography>{likes} likes</Typography>
         </CardActions>
+        <CardContent>
+          <Typography>
+            <strong>{user.userName} </strong>
+            {post.caption}
+          </Typography>
+        </CardContent>
         <CardContent>
           {comments.map((comment) => (
             <Comment

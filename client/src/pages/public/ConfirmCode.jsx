@@ -7,11 +7,8 @@ import { Box, Button, Container, TextField, Typography } from "@mui/material";
 function ConfirmCode() {
   let location = useLocation();
 
-  const navigate = useNavigate();
-  const { loginStatus, setLoginStatus } = useContext(authContext);
+  const { setLoginStatus } = useContext(authContext);
   const [confirmCode, setConfirmCode] = useState("");
-
-  console.log(location.state);
 
   const confirm = (e) => {
     e.preventDefault();

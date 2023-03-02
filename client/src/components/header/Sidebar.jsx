@@ -9,7 +9,7 @@ import { useContext } from "react";
 import { authContext } from "../../store/AuthContext";
 
 const Sidebar = () => {
-  const user = JSON.parse(localStorage.getItem("user"));
+  const { currentUser } = useContext(authContext);
 
   return (
     <Box className={headerStyle.sidebar}>
@@ -50,17 +50,17 @@ const Sidebar = () => {
         to={"/direct"}
       >
         <ChatOutlinedIcon />
-        <Typography className={headerStyle.sidebarLink}>Messages</Typography>
+        <Typography className={headerStyle.sidebarLink}>Direct</Typography>
       </NavLink>
       <NavLink
         className={({ isActive }) =>
           isActive ? headerStyle.active : headerStyle.link
         }
-        to={"/account"}
+        to={"/profile/" + currentUser?._id}
       >
         <Avatar src="" alt="Ruslan" />
         <Typography className={headerStyle.sidebarLink}>
-          {user?.userName}
+          {currentUser?.userName}
         </Typography>
       </NavLink>
     </Box>

@@ -54,4 +54,21 @@ export const api = {
       });
     return response;
   },
+  delete: async (url) => {
+    let token = localStorage.getItem("token");
+    let response = {};
+    await baseInstance
+      .delete(url, {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
+      .then((res) => {
+        response = res;
+      })
+      .catch((err) => {
+        throw err;
+      });
+    return response;
+  },
 };
