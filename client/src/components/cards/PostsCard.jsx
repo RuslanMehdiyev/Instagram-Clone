@@ -6,6 +6,8 @@ import {
   CardActions,
   IconButton,
   Typography,
+  Avatar,
+  Button,
 } from "@mui/material";
 
 import FavoriteIcon from "@mui/icons-material/Favorite";
@@ -13,28 +15,67 @@ import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlin
 import MoreHorizOutlinedIcon from "@mui/icons-material/MoreHorizOutlined";
 import BookmarkBorderOutlinedIcon from "@mui/icons-material/BookmarkBorderOutlined";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Box } from "@mui/system";
 import { Comment, CommentForm } from "../comments/Comment";
 import { api } from "../../network/api";
 import { useNavigate } from "react-router-dom";
+import { authContext } from "../../context/AuthContext";
 
 const PostCard = ({ post }) => {
   const [user, setUser] = useState([]);
   const [isLiked, setIsLiked] = useState(false);
+  const [like, setLike] = useState(post.likes.length);
   const [isSaved, setIsSaved] = useState(false);
   const [comments, setComments] = useState([]);
   const [replyTo, setReplyTo] = useState(null);
   const navigate = useNavigate();
+  const { currentUser } = useContext(authContext);
   useEffect(() => {
     api.getAll("/users/" + post.user._id).then((res) => setUser(res));
-  }, [post?.user._id]);
-  const handleLike = () => {
-    setIsLiked(!isLiked);
+  }, [post?.user._id, post.likes]);
+
+  useEffect(() => {
+    setIsLiked(post.likes.includes(currentUser._id));
+  }, [currentUser._id, post.likes]);
+
+  useEffect(() => {
+    if (user.savedPosts) {
+      setIsSaved(user.savedPosts.includes(post._id));
+    }
+  }, [user.savedPosts]);
+
+  const handleLikeDislike = (postId, userId) => {
+    if (isLiked) {
+      api
+        .update(`/posts/${postId}/dislike`, { userId })
+        .then((res) => {
+          setIsLiked(false);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      api
+        .add(`/posts/${postId}/like`, { userId })
+        .then((res) => {
+          setIsLiked(true);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+    setLike(isLiked ? like - 1 : like + 1);
   };
 
-  const handleSave = () => {
-    setIsSaved(!isSaved);
+  const handleSave = (userId, postId) => {
+    api
+      .add("/users/" + userId + "/save-post/" + postId)
+      .then((res) => {
+        console.log(res);
+        setIsSaved(!isSaved);
+      })
+      .catch((err) => console.log(err));
   };
 
   const handleCommentSubmit = (text) => {
@@ -59,11 +100,16 @@ const PostCard = ({ post }) => {
         <CardHeader
           onClick={() => navigate("/profile/" + user._id)}
           style={{ cursor: "pointer" }}
-          title={user.userName}
-          action={
-            <IconButton>
-              <MoreHorizOutlinedIcon />
-            </IconButton>
+          avatar={
+            <Avatar
+              src={user.avatar ? user.avatar : ""}
+              sx={{ width: 50, height: 50 }}
+            />
+          }
+          title={
+            <Typography variant="h6" style={{ fontWeight: "bold" }}>
+              {user.userName}
+            </Typography>
           }
         />
         <CardMedia
@@ -73,17 +119,29 @@ const PostCard = ({ post }) => {
           alt={post.caption}
         />
         <CardActions disableSpacing>
-          <IconButton onClick={handleLike}>
-            {isLiked ? (
-              <FavoriteIcon color="error" />
-            ) : (
-              <FavoriteBorderOutlinedIcon />
-            )}
+          <IconButton
+            onClick={() => handleLikeDislike(post._id, currentUser._id)}
+          >
+            <div
+              style={{
+                border: "none",
+                padding: "0",
+                minWidth: "unset",
+                backgroundColor: "transparent",
+              }}
+            >
+              {isLiked ? (
+                <FavoriteIcon color="error" />
+              ) : (
+                <FavoriteBorderOutlinedIcon />
+              )}
+            </div>
           </IconButton>
+
           <Typography>
-            {post.likes} {post.likes > 1 ? "Likes" : "Like"}
+            {like} {like > 1 ? "Likes" : "Like"}
           </Typography>
-          <IconButton onClick={handleSave}>
+          <IconButton onClick={() => handleSave(currentUser._id, post._id)}>
             {isSaved ? <BookmarkIcon /> : <BookmarkBorderOutlinedIcon />}
           </IconButton>
         </CardActions>
@@ -102,7 +160,7 @@ const PostCard = ({ post }) => {
                 >
                   {user.userName}
                 </button>
-                <span>{post.caption}</span>
+                <span style={{ marginLeft: "10px" }}>{post.caption}</span>
               </>
             </Typography>
           </CardContent>

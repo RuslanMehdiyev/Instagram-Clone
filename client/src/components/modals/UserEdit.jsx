@@ -18,7 +18,6 @@ import { authContext } from "../../context/AuthContext";
 const UserModal = ({ open, handleClose, currentUser, fetch, setFetch }) => {
   const [username, setUsername] = useState(currentUser.userName);
   const [fullName, setFullName] = useState(currentUser.fullName);
-
   const [bio, setBio] = useState(currentUser.bio);
   const [avatar, setAvatar] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);

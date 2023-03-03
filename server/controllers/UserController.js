@@ -1,4 +1,6 @@
 const userModel = require("../models/User");
+const postModel = require("../models/Post");
+
 const bcrypt = require("bcrypt");
 
 const userController = {
@@ -140,8 +142,7 @@ const userController = {
     const { userId, postId } = req.params;
     try {
       const user = await userModel.findById(userId);
-      const post = await userModel.findById(postId);
-
+      const post = await postModel.findById(postId);
       if (!user || !post) {
         return res.status(404).json({ message: "User or post not found" });
       }
