@@ -7,12 +7,10 @@ import {
   IconButton,
   Typography,
   Avatar,
-  Button,
 } from "@mui/material";
 
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
-import MoreHorizOutlinedIcon from "@mui/icons-material/MoreHorizOutlined";
 import BookmarkBorderOutlinedIcon from "@mui/icons-material/BookmarkBorderOutlined";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import { useContext, useEffect, useState } from "react";
@@ -30,7 +28,7 @@ const PostCard = ({ post }) => {
   const [comments, setComments] = useState([]);
   const [replyTo, setReplyTo] = useState(null);
   const navigate = useNavigate();
-  const { currentUser } = useContext(authContext);
+  const { currentUser, setCurrentUser } = useContext(authContext);
   useEffect(() => {
     api.getAll("/users/" + post.user._id).then((res) => setUser(res));
   }, [post?.user._id, post.likes]);
@@ -40,10 +38,8 @@ const PostCard = ({ post }) => {
   }, [currentUser._id, post.likes]);
 
   useEffect(() => {
-    if (user.savedPosts) {
-      setIsSaved(user.savedPosts.includes(post._id));
-    }
-  }, [user.savedPosts]);
+    setIsSaved(currentUser.savedPosts.includes(post._id));
+  }, []);
 
   const handleLikeDislike = (postId, userId) => {
     if (isLiked) {
@@ -72,8 +68,15 @@ const PostCard = ({ post }) => {
     api
       .add("/users/" + userId + "/save-post/" + postId)
       .then((res) => {
-        console.log(res);
+        const updatedUser = {
+          ...currentUser,
+          savedPosts: isSaved
+            ? currentUser.savedPosts.filter((p) => p !== postId)
+            : [...currentUser.savedPosts, postId],
+        };
+        localStorage.setItem("user", JSON.stringify(updatedUser));
         setIsSaved(!isSaved);
+        setCurrentUser(updatedUser);
       })
       .catch((err) => console.log(err));
   };
