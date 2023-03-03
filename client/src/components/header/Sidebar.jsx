@@ -6,7 +6,7 @@ import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
 import { Link, NavLink } from "react-router-dom";
 import headerStyle from "./sidebar.module.css";
 import { useContext } from "react";
-import { authContext } from "../../store/AuthContext";
+import { authContext } from "../../context/AuthContext";
 
 const Sidebar = () => {
   const { currentUser } = useContext(authContext);

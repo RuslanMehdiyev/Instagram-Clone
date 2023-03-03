@@ -87,12 +87,26 @@ const PostCard = ({ post }) => {
             {isSaved ? <BookmarkIcon /> : <BookmarkBorderOutlinedIcon />}
           </IconButton>
         </CardActions>
-        <CardContent>
-          <Typography>
-            <strong>{user.userName} </strong>
-            {post.caption}
-          </Typography>
-        </CardContent>
+        {post.caption && (
+          <CardContent>
+            <Typography>
+              <>
+                <button
+                  style={{
+                    border: "none",
+                    background: "none",
+                    fontSize: "18px",
+                    cursor: "pointer  ",
+                  }}
+                  onClick={() => navigate("/profile/" + user._id)}
+                >
+                  {user.userName}
+                </button>
+                <span>{post.caption}</span>
+              </>
+            </Typography>
+          </CardContent>
+        )}
         <CardContent>
           {comments.map((comment) => (
             <Comment

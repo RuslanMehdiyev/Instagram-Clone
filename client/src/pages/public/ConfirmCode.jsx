@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { api } from "../../network/api";
-import { authContext } from "../../store/AuthContext";
+import { authContext } from "../../context/AuthContext";
 import { Box, Button, Container, TextField, Typography } from "@mui/material";
 
 function ConfirmCode() {

@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import { authContext } from "../../store/AuthContext";
+import { authContext } from "../../context/AuthContext";
 
 function PublicLayout() {
   const { loginStatus } = useContext(authContext);

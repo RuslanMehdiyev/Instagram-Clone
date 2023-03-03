@@ -7,23 +7,28 @@ import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import { useContext, useEffect, useState } from "react";
-import { authContext } from "../../store/AuthContext";
+import { authContext } from "../../context/AuthContext";
 import { useNavigate, useParams } from "react-router-dom";
 import { api } from "../../network/api";
 import "./profile.css";
 import ProfileCard from "../../components/cards/ProfileCard";
+import UserModal from "../../components/modals/UserEdit";
+
 function Profile() {
   const [user, setUser] = useState([]);
   const [followed, setFollowed] = useState(true);
   const [posts, setPosts] = useState([]);
   const [fetch, setFetch] = useState(false);
-  const { currentUser, setLoginStatus } = useContext(authContext);
+  const [open, setOpen] = useState(false);
+
+  const { currentUser, setLoginStatus, setCurrentUser } =
+    useContext(authContext);
   const navigate = useNavigate();
   const userId = useParams().id;
 
   useEffect(() => {
     api.getAll("/users/" + userId).then((res) => setUser(res));
-  }, [userId]);
+  }, [userId, fetch]);
 
   useEffect(() => {
     api.getAll("/posts").then((res) => {
@@ -45,9 +50,14 @@ function Profile() {
     if (window.confirm("Are you sure?")) {
       localStorage.removeItem("user");
       localStorage.removeItem("token");
+      setCurrentUser(null);
       setLoginStatus(false);
       navigate("/");
     }
+  };
+
+  const handleClose = () => {
+    setOpen(false);
   };
 
   return (
@@ -55,10 +65,12 @@ function Profile() {
       <div className="profile-page">
         <div className="profile-header">
           <div className="profile-header-left">
-            <Avatar
-              src={user.avatar ? user.avatar : ""}
-              sx={{ width: 150, height: 150 }}
-            />
+            <Button>
+              <Avatar
+                src={user.avatar ? user.avatar : ""}
+                sx={{ width: 150, height: 150 }}
+              />
+            </Button>
           </div>
           <div className="profile-header-right">
             <div className="profile-header-top">
@@ -74,7 +86,11 @@ function Profile() {
                     {followed ? "Unfollow" : "Follow"}
                   </Button>
                 ) : (
-                  <Button variant="contained" size="small">
+                  <Button
+                    variant="contained"
+                    size="small"
+                    onClick={() => setOpen(true)}
+                  >
                     Edit
                   </Button>
                 )}
@@ -130,7 +146,6 @@ function Profile() {
               </button>
             </div>
           )}
-
           <div className="profile-post-grid">
             {posts.map((post) => (
               <div className="post-grid-item" key={post._id}>
@@ -152,6 +167,13 @@ function Profile() {
           </div>
         </div>
       </div>
+      <UserModal
+        open={open}
+        handleClose={handleClose}
+        currentUser={currentUser}
+        setFetch={setFetch}
+        fetch={fetch}
+      />
     </>
   );
 }

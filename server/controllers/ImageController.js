@@ -3,14 +3,19 @@ const Image = require("../models/Image");
 const imageController = {
   createImage: async (req, res) => {
     try {
-      const { filename } = req.file;
-      const imageUrl = `http://localhost:8080/api/uploads/${filename}`;
+      let imageUrl = null;
+      if (!req.file) {
+        imageUrl = "";
+      } else {
+        const { filename } = req.file;
+        imageUrl = `http://localhost:8080/api/uploads/${filename}`;
+      }
       const newImage = new Image({ imageUrl });
       const savedImage = await newImage.save();
       res.status(201).json(savedImage);
     } catch (error) {
       console.error("error", error);
-      res.status(500).json({ message: "Internal server error" });
+      res.status(500).json({ message: "Internal server errorrr" });
     }
   },
   getImage: async (req, res) => {

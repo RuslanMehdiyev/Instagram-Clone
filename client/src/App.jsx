@@ -11,6 +11,7 @@ import Direct from "./pages/direct/Direct";
 import SavedPosts from "./pages/saved/SavedPosts";
 import CreatePost from "./pages/create/CreatePost";
 import Profile from "./pages/profile/Profile";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (

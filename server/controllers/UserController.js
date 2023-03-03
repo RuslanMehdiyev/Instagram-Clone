@@ -28,46 +28,44 @@ const userController = {
       }
     });
   },
-  update: (req, res) => {
-    const { fullName, userName, email, password } = req.body;
-    const id = req.params.id;
-    userModel.findById(id, (err, doc) => {
-      if (!err) {
-        if (doc) {
-          doc.name = fullName;
-          doc.userName = userName;
-          doc.email = email;
-          if (password) {
-            bcrypt.hash(password, 10, (err, hash) => {
-              if (!err) {
-                doc.password = hash;
-                doc.save((err, updatedDoc) => {
-                  if (!err) {
-                    res.json(updatedDoc);
-                  } else {
-                    res.status(500).json(err);
-                  }
-                });
-              } else {
-                res.status(500).json(err);
-              }
-            });
-          } else {
-            doc.save((err, updatedDoc) => {
-              if (!err) {
-                res.json(updatedDoc);
-              } else {
-                res.status(500).json(err);
-              }
-            });
-          }
-        } else {
-          res.status(404).json({ message: "User not found" });
-        }
-      } else {
-        res.status(500).json(err);
+  update: async (req, res) => {
+    const { id } = req.params;
+    const { fullName, userName, password, avatar, bio } = req.body;
+
+    if (!fullName || !userName) {
+      res.status(400).json({ message: "Full name and username are required" });
+      return;
+    }
+
+    try {
+      const existingUser = await userModel.findOne({ userName: userName });
+      if (existingUser && existingUser._id.toString() !== id) {
+        res.status(400).json({ message: "Username already exists" });
+        return;
       }
-    });
+
+      const user = await userModel.findById(id);
+      if (!user) {
+        res.status(404).json({ message: "User not found" });
+        return;
+      }
+
+      user.fullName = fullName;
+      user.userName = userName;
+      if (avatar) {
+        user.avatar = avatar;
+      }
+      user.bio = bio;
+      if (password) {
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(password, salt);
+      }
+
+      await user.save();
+      res.status(200).json(user);
+    } catch (err) {
+      res.status(500).send(err);
+    }
   },
   delete: (req, res) => {
     const id = req.params.id;

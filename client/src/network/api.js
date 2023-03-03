@@ -36,6 +36,23 @@ export const api = {
       });
     return response;
   },
+  update: async (url, data) => {
+    let token = localStorage.getItem("token");
+    let response = {};
+    await baseInstance
+      .put(url, data, {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
+      .then((res) => {
+        response = res.data;
+      })
+      .catch((err) => {
+        throw err;
+      });
+    return response;
+  },
   createPost: async (url, data) => {
     let token = localStorage.getItem("token");
     let response = {};

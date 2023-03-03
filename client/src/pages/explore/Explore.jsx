@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import PostCard from "../../components/cards/PostsCard";
 import { api } from "../../network/api";
-import { authContext } from "../../store/AuthContext";
+import { authContext } from "../../context/AuthContext";
 
 function Explore() {
   const [posts, setPosts] = useState(null);

@@ -17,6 +17,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
 import { api } from "../../network/api";
 import Copyright from "../../components/copyright/Copyright";
+import { useContext } from "react";
+import { authContext } from "../../context/AuthContext";
 
 export default function Login() {
   const {
@@ -26,6 +28,7 @@ export default function Login() {
   } = useForm({
     resolver: yupResolver(loginValidation),
   });
+  const { setCurrentUser } = useContext(authContext);
 
   const navigate = useNavigate();
 
@@ -34,6 +37,7 @@ export default function Login() {
       .add("/auth/login", data)
       .then((res) => {
         localStorage.setItem("user", JSON.stringify(res));
+        setCurrentUser(JSON.parse(localStorage.getItem("user")));
         navigate("confirm", { state: { userId: res._id } });
       })
       .catch((err) => {
