@@ -16,8 +16,10 @@ import UserModal from "../../components/modals/UserEdit";
 
 function Profile() {
   const [user, setUser] = useState([]);
-  const [followed, setFollowed] = useState(true);
+  const [followed, setFollowed] = useState(false);
   const [posts, setPosts] = useState([]);
+  const [postsLength, setPostsLength] = useState(0);
+  const [toggle, setToggle] = useState(true);
   const [fetch, setFetch] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -31,8 +33,13 @@ function Profile() {
   }, [userId, fetch]);
 
   useEffect(() => {
+    setFollowed(currentUser.following.includes(userId));
+  }, [followed]);
+
+  useEffect(() => {
     api.getAll("/posts").then((res) => {
-      setPosts(res.filter((a) => a.user?._id === userId));
+      setPosts(res);
+      setPostsLength(res.filter((a) => a.user?._id === userId).length);
     });
   }, [userId, fetch]);
 
@@ -53,6 +60,40 @@ function Profile() {
       setCurrentUser(null);
       setLoginStatus(false);
       navigate("/");
+    }
+  };
+
+  const handleFollowUnfollow = (userId, followUserId) => {
+    if (followed) {
+      api
+        .add(`/users/unfollow`, { userId, followUserId })
+        .then((res) => {
+          const updatedUser = {
+            ...currentUser,
+            following: currentUser.following.filter(
+              (id) => id !== followUserId
+            ),
+          };
+          localStorage.setItem("user", JSON.stringify(updatedUser));
+          setFollowed(false);
+          setCurrentUser(updatedUser);
+          setFetch(!fetch);
+        })
+        .catch((err) => console.log(err));
+    } else {
+      api
+        .add(`/users/follow`, { userId, followUserId })
+        .then((res) => {
+          const updatedUser = {
+            ...currentUser,
+            following: [...currentUser.following, followUserId],
+          };
+          localStorage.setItem("user", JSON.stringify(updatedUser));
+          setFollowed(true);
+          setCurrentUser(updatedUser);
+          setFetch(!fetch);
+        })
+        .catch((err) => console.log(err));
     }
   };
 
@@ -81,7 +122,9 @@ function Profile() {
                     variant="contained"
                     size="small"
                     color={followed ? "error" : "success"}
-                    // onClick={handleClick}
+                    onClick={() =>
+                      handleFollowUnfollow(currentUser._id, userId)
+                    }
                   >
                     {followed ? "Unfollow" : "Follow"}
                   </Button>
@@ -115,7 +158,7 @@ function Profile() {
             </div>
             <div className="profile-header-middle">
               <div className="post-count">
-                <b>{posts.length}</b>
+                <b>{postsLength}</b>
                 <span>posts</span>
               </div>
               <div className="follower-count">
@@ -136,34 +179,56 @@ function Profile() {
         <div className="profile-body">
           {user?._id === currentUser?._id && (
             <div className="profile-nav-tabs">
-              <button className="active">
+              <button
+                className={toggle ? "active" : ""}
+                onClick={() => setToggle(true)}
+              >
                 <GridOnOutlinedIcon />
                 <span>POSTS</span>
               </button>
-              <button>
+              <button
+                className={toggle ? "" : "active"}
+                onClick={() => setToggle(false)}
+              >
                 <BookmarkAddOutlinedIcon />
                 <span>SAVED</span>
               </button>
             </div>
           )}
           <div className="profile-post-grid">
-            {posts.map((post) => (
-              <div className="post-grid-item" key={post._id}>
-                <ProfileCard post={post} />
-                <div className="icon-wrapper">
-                  <FavoriteIcon className="like-icon" />
-                  <b>{post.likes && post.likes.length}</b>
-                  {user?._id === currentUser?._id && (
-                    <button
-                      style={{ background: "none", border: "none" }}
-                      onClick={() => deletePost(post._id)}
-                    >
-                      <DeleteOutlineOutlinedIcon className="delete-icon" />
-                    </button>
-                  )}
-                </div>
-              </div>
-            ))}
+            {toggle
+              ? posts
+                  .filter((a) => a.user?._id === userId)
+                  .map((post) => (
+                    <div className="post-grid-item" key={post._id}>
+                      <ProfileCard post={post} />
+                      <div className="icon-wrapper">
+                        <FavoriteIcon className="like-icon" />
+                        <b>{post.likes && post.likes.length}</b>
+                        {user?._id === currentUser?._id && (
+                          <button
+                            style={{ background: "none", border: "none" }}
+                            onClick={() => deletePost(post._id)}
+                          >
+                            <DeleteOutlineOutlinedIcon className="delete-icon" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))
+              : currentUser.savedPosts.length
+              ? posts
+                  .filter((post) => currentUser.savedPosts.includes(post._id))
+                  .map((filteredPost) => (
+                    <div className="post-grid-item" key={filteredPost._id}>
+                      <ProfileCard post={filteredPost} />
+                      <div className="icon-wrapper">
+                        <FavoriteIcon className="like-icon" />
+                        <b>{filteredPost.likes && filteredPost.likes.length}</b>
+                      </div>
+                    </div>
+                  ))
+              : "Empty"}
           </div>
         </div>
       </div>

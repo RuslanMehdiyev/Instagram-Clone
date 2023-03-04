@@ -1,6 +1,7 @@
 .profile-page {
   margin: 88px 0;
   max-width: 60%;
+  width: 100%;
 }
 
 .profile-page .profile-header {
@@ -58,15 +59,11 @@
   flex-direction: column;
 }
 
-/* profile body section  */
-
 .profile-body {
   border-top: 1px solid #ccc;
   margin-top: 20px;
   padding-top: 10px;
 }
-
-/*!  nav tabs */
 
 .profile-body .profile-nav-tabs {
   display: flex;
@@ -95,8 +92,6 @@
   position: absolute;
   top: -10px;
 }
-
-/*! post grid  */
 
 .profile-body .profile-post-grid {
   display: grid;
@@ -142,8 +137,6 @@
   font-size: 20px;
 }
 
-/* responsive */
-
 @media (max-width: 600px) {
   .profile-page {
     max-width: 100%;
@@ -172,7 +165,6 @@
   }
 
   .profile-body .profile-post-grid {
-    /* grid-template-columns: auto; */
     padding: 1rem;
   }
   .profile-body .profile-post-grid .post-grid-item {

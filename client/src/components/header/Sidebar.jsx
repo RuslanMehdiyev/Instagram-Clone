@@ -59,8 +59,8 @@ const Sidebar = () => {
         to={"/profile/" + currentUser?._id}
       >
         <Avatar
-          src={currentUser.avatar ? currentUser.avatar : ""}
-          sx={{ width: 50, height: 50 }}
+          src={currentUser?.avatar ? currentUser.avatar : ""}
+          sx={{ width: 45, height: 45 }}
           alt="Ruslan"
         />
         <Typography className={headerStyle.sidebarLink}>

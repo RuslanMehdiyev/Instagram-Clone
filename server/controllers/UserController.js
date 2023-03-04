@@ -115,14 +115,14 @@ const userController = {
     );
   },
   unfollowUser: (req, res) => {
-    const { userId, unfollowUserId } = req.body;
+    const { userId, followUserId } = req.body;
     userModel.updateOne(
       { _id: userId },
-      { $pull: { following: unfollowUserId } },
+      { $pull: { following: followUserId } },
       (err, result) => {
         if (!err) {
           userModel.updateOne(
-            { _id: unfollowUserId },
+            { _id: followUserId },
             { $pull: { followers: userId } },
             (err, result) => {
               if (!err) {
