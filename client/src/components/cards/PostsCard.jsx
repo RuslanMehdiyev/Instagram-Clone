@@ -121,29 +121,35 @@ const PostCard = ({ post }) => {
           image={post.image}
           alt={post.caption}
         />
-        <CardActions disableSpacing>
-          <IconButton
-            onClick={() => handleLikeDislike(post._id, currentUser._id)}
+        <CardActions
+          disableSpacing
+          style={{
+            justifyContent: "space-between",
+          }}
+        >
+          <div
+            style={{
+              border: "none",
+              padding: "0",
+              display: "flex",
+              backgroundColor: "transparent",
+              alignItems: "center",
+            }}
           >
-            <div
-              style={{
-                border: "none",
-                padding: "0",
-                minWidth: "unset",
-                backgroundColor: "transparent",
-              }}
+            <IconButton
+              onClick={() => handleLikeDislike(post._id, currentUser._id)}
             >
               {isLiked ? (
                 <FavoriteIcon color="error" />
               ) : (
                 <FavoriteBorderOutlinedIcon />
               )}
-            </div>
-          </IconButton>
+            </IconButton>
 
-          <Typography>
-            {like} {like > 1 ? "Likes" : "Like"}
-          </Typography>
+            <Typography>
+              {like} {like > 1 ? "Likes" : "Like"}
+            </Typography>
+          </div>
           <IconButton onClick={() => handleSave(currentUser._id, post._id)}>
             {isSaved ? <BookmarkIcon /> : <BookmarkBorderOutlinedIcon />}
           </IconButton>

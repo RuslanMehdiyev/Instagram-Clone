@@ -13,6 +13,7 @@ import { api } from "../../network/api";
 import "./profile.css";
 import ProfileCard from "../../components/cards/ProfileCard";
 import UserModal from "../../components/modals/UserEdit";
+import PropagateLoader from "react-spinners/PropagateLoader";
 
 function Profile() {
   const [user, setUser] = useState([]);
@@ -22,6 +23,7 @@ function Profile() {
   const [toggle, setToggle] = useState(true);
   const [fetch, setFetch] = useState(false);
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const { currentUser, setLoginStatus, setCurrentUser } =
     useContext(authContext);
@@ -29,7 +31,10 @@ function Profile() {
   const userId = useParams().id;
 
   useEffect(() => {
-    api.getAll("/users/" + userId).then((res) => setUser(res));
+    api
+      .getAll("/users/" + userId)
+      .then((res) => setUser(res))
+      .finally(() => setLoading(false));
   }, [userId, fetch]);
 
   useEffect(() => {
@@ -103,142 +108,157 @@ function Profile() {
 
   return (
     <>
-      <div className="profile-page">
-        <div className="profile-header">
-          <div className="profile-header-left">
-            <Button>
-              <Avatar
-                src={user.avatar ? user.avatar : ""}
-                sx={{ width: 150, height: 150 }}
-              />
-            </Button>
-          </div>
-          <div className="profile-header-right">
-            <div className="profile-header-top">
-              <span className="profile-page-username">{user.userName}</span>
-              <div className="profile-buttons">
-                {user?._id !== currentUser?._id ? (
-                  <Button
-                    variant="contained"
-                    size="small"
-                    color={followed ? "error" : "success"}
-                    onClick={() =>
-                      handleFollowUnfollow(currentUser._id, userId)
-                    }
-                  >
-                    {followed ? "Unfollow" : "Follow"}
-                  </Button>
-                ) : (
-                  <Button
-                    variant="contained"
-                    size="small"
-                    onClick={() => setOpen(true)}
-                  >
-                    Edit
-                  </Button>
-                )}
+      {loading ? (
+        <PropagateLoader color="#36d7b7" />
+      ) : (
+        <>
+          <div className="profile-page">
+            <div className="profile-header">
+              <div className="profile-header-left">
+                <Button>
+                  <Avatar
+                    src={user.avatar ? user.avatar : ""}
+                    sx={{ width: 150, height: 150 }}
+                  />
+                </Button>
+              </div>
+              <div className="profile-header-right">
+                <div className="profile-header-top">
+                  <span className="profile-page-username">{user.userName}</span>
+                  <div className="profile-buttons">
+                    {user?._id !== currentUser?._id ? (
+                      <Button
+                        variant="contained"
+                        size="small"
+                        color={followed ? "error" : "success"}
+                        onClick={() =>
+                          handleFollowUnfollow(currentUser._id, userId)
+                        }
+                      >
+                        {followed ? "Unfollow" : "Follow"}
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="contained"
+                        size="small"
+                        onClick={() => setOpen(true)}
+                      >
+                        Edit
+                      </Button>
+                    )}
 
-                {user?._id === currentUser?._id ? (
-                  <button>
-                    <SettingsOutlinedIcon />
-                  </button>
-                ) : (
+                    {user?._id === currentUser?._id ? (
+                      <button>
+                        <SettingsOutlinedIcon />
+                      </button>
+                    ) : (
+                      <button
+                      // onClick={createConversation}
+                      >
+                        <MailOutlineIcon />
+                      </button>
+                    )}
+                    {user?._id === currentUser?._id && (
+                      <button onClick={handleLogOut}>
+                        <LogoutOutlinedIcon color="error" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+                <div className="profile-header-middle">
+                  <div className="post-count">
+                    <b>{postsLength}</b>
+                    <span>posts</span>
+                  </div>
+                  <div className="follower-count">
+                    <b>{user.followers && user.followers.length}</b>
+                    <span>followers</span>
+                  </div>
+                  <div className="following-count">
+                    <b>{user.following && user.following.length}</b>
+                    <span>following</span>
+                  </div>
+                </div>
+                <div className="head-right-bottom">
+                  <b>{user.fullName}</b>
+                  <span>{user.bio && user.bio}</span>
+                </div>
+              </div>
+            </div>
+            <div className="profile-body">
+              {user?._id === currentUser?._id && (
+                <div className="profile-nav-tabs">
                   <button
-                  // onClick={createConversation}
+                    className={toggle ? "active" : ""}
+                    onClick={() => setToggle(true)}
                   >
-                    <MailOutlineIcon />
+                    <GridOnOutlinedIcon />
+                    <span>POSTS</span>
                   </button>
-                )}
-                {user?._id === currentUser?._id && (
-                  <button onClick={handleLogOut}>
-                    <LogoutOutlinedIcon color="error" />
+                  <button
+                    className={toggle ? "" : "active"}
+                    onClick={() => setToggle(false)}
+                  >
+                    <BookmarkAddOutlinedIcon />
+                    <span>SAVED</span>
                   </button>
+                </div>
+              )}
+              <div className="profile-post-grid">
+                {toggle ? (
+                  posts
+                    .filter((a) => a.user?._id === userId)
+                    .map((post) => (
+                      <div className="post-grid-item" key={post._id}>
+                        <ProfileCard post={post} />
+                        <div className="icon-wrapper">
+                          <FavoriteIcon className="like-icon" />
+                          <b>{post.likes && post.likes.length}</b>
+                          {user?._id === currentUser?._id && (
+                            <button
+                              style={{ background: "none", border: "none" }}
+                              onClick={() => deletePost(post._id)}
+                            >
+                              <DeleteOutlineOutlinedIcon className="delete-icon" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))
+                ) : currentUser.savedPosts.length ? (
+                  posts
+                    .filter((post) => currentUser.savedPosts.includes(post._id))
+                    .map((filteredPost) => (
+                      <div className="post-grid-item" key={filteredPost._id}>
+                        <ProfileCard post={filteredPost} />
+                        <div className="icon-wrapper">
+                          <FavoriteIcon className="like-icon" />
+                          <b>
+                            {filteredPost.likes && filteredPost.likes.length}
+                          </b>
+                        </div>
+                      </div>
+                    ))
+                ) : (
+                  <>
+                    <span></span>
+                    <h2 style={{ textAlign: "center", marginTop: "1rem" }}>
+                      There are no saved publications
+                    </h2>
+                  </>
                 )}
               </div>
-            </div>
-            <div className="profile-header-middle">
-              <div className="post-count">
-                <b>{postsLength}</b>
-                <span>posts</span>
-              </div>
-              <div className="follower-count">
-                <b>{user.followers && user.followers.length}</b>
-                <span>followers</span>
-              </div>
-              <div className="following-count">
-                <b>{user.following && user.following.length}</b>
-                <span>following</span>
-              </div>
-            </div>
-            <div className="head-right-bottom">
-              <b>{user.fullName}</b>
-              <span>{user.bio && user.bio}</span>
             </div>
           </div>
-        </div>
-        <div className="profile-body">
-          {user?._id === currentUser?._id && (
-            <div className="profile-nav-tabs">
-              <button
-                className={toggle ? "active" : ""}
-                onClick={() => setToggle(true)}
-              >
-                <GridOnOutlinedIcon />
-                <span>POSTS</span>
-              </button>
-              <button
-                className={toggle ? "" : "active"}
-                onClick={() => setToggle(false)}
-              >
-                <BookmarkAddOutlinedIcon />
-                <span>SAVED</span>
-              </button>
-            </div>
-          )}
-          <div className="profile-post-grid">
-            {toggle
-              ? posts
-                  .filter((a) => a.user?._id === userId)
-                  .map((post) => (
-                    <div className="post-grid-item" key={post._id}>
-                      <ProfileCard post={post} />
-                      <div className="icon-wrapper">
-                        <FavoriteIcon className="like-icon" />
-                        <b>{post.likes && post.likes.length}</b>
-                        {user?._id === currentUser?._id && (
-                          <button
-                            style={{ background: "none", border: "none" }}
-                            onClick={() => deletePost(post._id)}
-                          >
-                            <DeleteOutlineOutlinedIcon className="delete-icon" />
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  ))
-              : currentUser.savedPosts.length
-              ? posts
-                  .filter((post) => currentUser.savedPosts.includes(post._id))
-                  .map((filteredPost) => (
-                    <div className="post-grid-item" key={filteredPost._id}>
-                      <ProfileCard post={filteredPost} />
-                      <div className="icon-wrapper">
-                        <FavoriteIcon className="like-icon" />
-                        <b>{filteredPost.likes && filteredPost.likes.length}</b>
-                      </div>
-                    </div>
-                  ))
-              : "Empty"}
-          </div>
-        </div>
-      </div>
-      <UserModal
-        open={open}
-        handleClose={handleClose}
-        currentUser={currentUser}
-        setFetch={setFetch}
-        fetch={fetch}
-      />
+          <UserModal
+            open={open}
+            handleClose={handleClose}
+            currentUser={currentUser}
+            setFetch={setFetch}
+            fetch={fetch}
+          />
+        </>
+      )}
     </>
   );
 }

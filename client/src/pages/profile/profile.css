@@ -148,9 +148,25 @@
   }
 
   .profile-page .profile-header .profile-page-username {
-    font-size: 20px;
+    font-size: 1.5rem;
+    font-weight: bold;
   }
-
+  .profile-page .profile-header .profile-header-right {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 90%;
+  }
+  .profile-page .profile-header-middle {
+    margin: 1rem 0;
+  }
+  .profile-page .profile-header-top {
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center; */
+    align-items: center;
+    gap: 10px;
+  }
   .head-right-center {
     justify-content: center;
   }
