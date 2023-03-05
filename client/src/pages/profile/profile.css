@@ -1,6 +1,6 @@
 .profile-page {
   margin: 88px 0;
-  max-width: 60%;
+  max-width: 65%;
   width: 100%;
 }
 
@@ -97,15 +97,16 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
+  cursor: pointer;
 }
 
 .profile-body .profile-post-grid .post-grid-item {
-  width: 200px;
+  width: 100%;
   position: relative;
 }
 
 .profile-body .profile-post-grid .post-grid-item img {
-  height: 200px;
+  height: 210px;
 }
 
 .profile-body .profile-post-grid .post-grid-item .icon-wrapper {
@@ -181,20 +182,24 @@
   }
 
   .profile-body .profile-post-grid {
-    padding: 1rem;
+    padding: 0 1rem;
+    gap: 10px;
   }
   .profile-body .profile-post-grid .post-grid-item {
     width: 100%;
   }
   .profile-body .profile-post-grid .post-grid-item img {
     width: 100%;
-    height: 100px;
+    height: 120px;
   }
 }
 
 @media only screen and (min-width: 600px) and (max-width: 768px) {
   .profile-page {
     max-width: 100%;
+  }
+  .profile-body .profile-post-grid {
+    padding: 0 1rem;
   }
 }
 @media only screen and (min-width: 768px) {

@@ -58,7 +58,6 @@ const UserModal = ({ open, handleClose, currentUser, fetch, setFetch }) => {
       toast.error(error.response?.data.message);
     }
   };
-
   return (
     <Dialog
       open={open}
@@ -70,6 +69,11 @@ const UserModal = ({ open, handleClose, currentUser, fetch, setFetch }) => {
       <DialogContent>
         <DialogContentText>Update your information below:</DialogContentText>
         <CardContent>
+          <img
+            style={avatar ? { display: "none" } : { width: "150px" }}
+            src={currentUser.avatar}
+            alt=""
+          />
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <input
               accept="image/jpeg,image/png"

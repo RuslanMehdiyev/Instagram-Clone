@@ -7,14 +7,16 @@ import { Link, NavLink } from "react-router-dom";
 import headerStyle from "./sidebar.module.css";
 import { useContext } from "react";
 import { authContext } from "../../context/AuthContext";
+import logo from "../../assets/images/instaicon.png";
 
 const Sidebar = () => {
   const { currentUser } = useContext(authContext);
 
   return (
     <Box className={headerStyle.sidebar}>
-      <Link className={headerStyle.logo} to={"/home"}>
-        Instagram
+      <Link className={headerStyle.link} to={"/home"}>
+        <img src={logo} alt="Inst" />
+        <Typography className={headerStyle.sidebarLink}>Instagram</Typography>
       </Link>
       <NavLink
         className={({ isActive }) =>

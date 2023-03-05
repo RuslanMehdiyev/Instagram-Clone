@@ -1,6 +1,6 @@
 .sidebar {
   width: 100%;
-  max-width: 17%;
+  max-width: fit-content;
   height: 100vh;
   background-color: #ffff;
   border-right: 1px solid #dbdbdb;
@@ -14,12 +14,6 @@
   top: 0;
   z-index: 11;
 }
-.logo {
-  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
-    "Lucida Sans", Arial, sans-serif;
-  font-size: 1.6rem;
-  color: #000;
-}
 .link {
   color: #000;
   display: inline-flex;
@@ -27,11 +21,13 @@
   align-items: center;
   gap: 10px;
 }
+.link img {
+  width: 30px;
+}
 .active {
   color: red;
   opacity: 0.5;
   display: inline-flex;
-  /* justify-content: center; */
   align-items: center;
   gap: 10px;
 }
@@ -71,7 +67,7 @@
     align-items: center;
   }
 }
-@media only screen and (min-width: 768px) and (max-width: 992px) {
+@media only screen and (min-width: 768px) and (max-width: 1100px) {
   .sidebarLink {
     display: none;
   }

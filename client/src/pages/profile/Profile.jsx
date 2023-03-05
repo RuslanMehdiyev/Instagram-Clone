@@ -1,4 +1,4 @@
-import { Avatar, Button } from "@mui/material";
+import { Avatar, Button, Dialog } from "@mui/material";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import GridOnOutlinedIcon from "@mui/icons-material/GridOnOutlined";
@@ -14,16 +14,20 @@ import "./profile.css";
 import ProfileCard from "../../components/cards/ProfileCard";
 import UserModal from "../../components/modals/UserEdit";
 import PropagateLoader from "react-spinners/PropagateLoader";
+import { Box } from "@mui/system";
+import PostCard from "../../components/cards/PostsCard";
 
 function Profile() {
   const [user, setUser] = useState([]);
   const [followed, setFollowed] = useState(false);
   const [posts, setPosts] = useState([]);
   const [postsLength, setPostsLength] = useState(0);
+  const [post, setPost] = useState({});
   const [toggle, setToggle] = useState(true);
   const [fetch, setFetch] = useState(false);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [detailsOpen, setDetailsOpen] = useState(false);
 
   const { currentUser, setLoginStatus, setCurrentUser } =
     useContext(authContext);
@@ -49,7 +53,7 @@ function Profile() {
   }, [userId, fetch]);
 
   const deletePost = (id) => {
-    if (window.confirm("Are you sure?")) {
+    if (window.confirm("Are you sure you want to delete this post?")) {
       api.delete("/posts/" + id).then((res) => {
         if (res.status == 200) {
           setFetch(!fetch);
@@ -102,8 +106,14 @@ function Profile() {
     }
   };
 
+  const detailModal = (item) => {
+    setDetailsOpen(true);
+    setPost(item);
+  };
+
   const handleClose = () => {
     setOpen(false);
+    setDetailsOpen(false);
   };
 
   return (
@@ -209,7 +219,11 @@ function Profile() {
                   posts
                     .filter((a) => a.user?._id === userId)
                     .map((post) => (
-                      <div className="post-grid-item" key={post._id}>
+                      <div
+                        className="post-grid-item"
+                        key={post._id}
+                        onClick={() => detailModal(post)}
+                      >
                         <ProfileCard post={post} />
                         <div className="icon-wrapper">
                           <FavoriteIcon className="like-icon" />
@@ -217,7 +231,10 @@ function Profile() {
                           {user?._id === currentUser?._id && (
                             <button
                               style={{ background: "none", border: "none" }}
-                              onClick={() => deletePost(post._id)}
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                deletePost(post._id);
+                              }}
                             >
                               <DeleteOutlineOutlinedIcon className="delete-icon" />
                             </button>
@@ -229,7 +246,11 @@ function Profile() {
                   posts
                     .filter((post) => currentUser.savedPosts.includes(post._id))
                     .map((filteredPost) => (
-                      <div className="post-grid-item" key={filteredPost._id}>
+                      <div
+                        className="post-grid-item"
+                        key={filteredPost._id}
+                        onClick={() => detailModal(filteredPost)}
+                      >
                         <ProfileCard post={filteredPost} />
                         <div className="icon-wrapper">
                           <FavoriteIcon className="like-icon" />
@@ -257,6 +278,16 @@ function Profile() {
             setFetch={setFetch}
             fetch={fetch}
           />
+          <Dialog
+            open={detailsOpen}
+            onClose={handleClose}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <Box>
+              <PostCard post={post} />
+            </Box>
+          </Dialog>
         </>
       )}
     </>

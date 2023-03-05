@@ -35,7 +35,7 @@ const PostCard = ({ post }) => {
 
   useEffect(() => {
     setIsLiked(post.likes.includes(currentUser._id));
-  }, [currentUser._id, post.likes]);
+  }, []);
 
   useEffect(() => {
     setIsSaved(currentUser.savedPosts.includes(post._id));
@@ -98,7 +98,7 @@ const PostCard = ({ post }) => {
   };
 
   return (
-    <Box mt={"1rem"} p="1rem" maxWidth={"500px"}>
+    <Box mt={"1rem"} p="1rem" maxWidth={"500px"} margin={"0 auto"}>
       <Card>
         <CardHeader
           onClick={() => navigate("/profile/" + user._id)}
