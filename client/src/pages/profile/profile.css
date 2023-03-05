@@ -137,7 +137,9 @@
   color: #fff;
   font-size: 20px;
 }
-
+.followers {
+  cursor: pointer;
+}
 @media (max-width: 600px) {
   .profile-page {
     max-width: 100%;

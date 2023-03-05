@@ -8,7 +8,6 @@ import ProtectedLayout from "./pages/layouts/ProtectedLayout";
 import Explore from "./pages/explore/Explore";
 import Home from "./pages/home/Home";
 import Direct from "./pages/direct/Direct";
-import SavedPosts from "./pages/saved/SavedPosts";
 import CreatePost from "./pages/create/CreatePost";
 import Profile from "./pages/profile/Profile";
 import "react-toastify/dist/ReactToastify.css";
@@ -27,7 +26,6 @@ function App() {
           <Route path="home" element={<Home />} />
           <Route path="explore" element={<Explore />} />
           <Route path="direct" element={<Direct />} />
-          <Route path="saved" element={<SavedPosts />} />
           <Route path="profile/:id" element={<Profile />} />
           <Route path="create" element={<CreatePost />} />
         </Route>

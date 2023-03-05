@@ -16,23 +16,30 @@ import UserModal from "../../components/modals/UserEdit";
 import PropagateLoader from "react-spinners/PropagateLoader";
 import { Box } from "@mui/system";
 import PostCard from "../../components/cards/PostsCard";
+import FollowersListDialog from "../../components/modals/FollowersListDialog";
 
 function Profile() {
+  const [allUsers, setAllUsers] = useState([]);
   const [user, setUser] = useState([]);
   const [followed, setFollowed] = useState(false);
   const [posts, setPosts] = useState([]);
   const [postsLength, setPostsLength] = useState(0);
   const [post, setPost] = useState({});
   const [toggle, setToggle] = useState(true);
-  const [fetch, setFetch] = useState(false);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [detailsOpen, setDetailsOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [userList, setUserList] = useState([]);
 
-  const { currentUser, setLoginStatus, setCurrentUser } =
+  const { currentUser, setLoginStatus, setCurrentUser, fetch, setFetch } =
     useContext(authContext);
   const navigate = useNavigate();
   const userId = useParams().id;
+
+  useEffect(() => {
+    api.getAll("/users").then((res) => setAllUsers(res));
+  }, []);
 
   useEffect(() => {
     api
@@ -116,6 +123,15 @@ function Profile() {
     setDetailsOpen(false);
   };
 
+  const handleDialogOpen = (userList) => {
+    setUserList(userList);
+    setDialogOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setDialogOpen(false);
+  };
+
   return (
     <>
       {loading ? (
@@ -180,14 +196,33 @@ function Profile() {
                     <b>{postsLength}</b>
                     <span>posts</span>
                   </div>
-                  <div className="follower-count">
+                  <div
+                    className="followers"
+                    onClick={() =>
+                      handleDialogOpen(
+                        allUsers.filter((u) => user.followers.includes(u._id))
+                      )
+                    }
+                  >
                     <b>{user.followers && user.followers.length}</b>
                     <span>followers</span>
                   </div>
-                  <div className="following-count">
+                  <div
+                    className="followers"
+                    onClick={() =>
+                      handleDialogOpen(
+                        allUsers.filter((u) => user.following.includes(u._id))
+                      )
+                    }
+                  >
                     <b>{user.following && user.following.length}</b>
                     <span>following</span>
                   </div>
+                  <FollowersListDialog
+                    userList={userList}
+                    open={dialogOpen}
+                    onClose={handleDialogClose}
+                  />
                 </div>
                 <div className="head-right-bottom">
                   <b>{user.fullName}</b>

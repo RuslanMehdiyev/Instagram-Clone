@@ -7,7 +7,7 @@ const userController = {
   getAll: (req, res) => {
     userModel
       .find({ isDeleted: false })
-      .select("_id fullName userName  email")
+      .select("_id fullName userName  email avatar")
       .exec((err, docs) => {
         if (!err) {
           res.json(docs);

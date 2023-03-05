@@ -28,7 +28,9 @@ const PostCard = ({ post }) => {
   const [comments, setComments] = useState([]);
   const [replyTo, setReplyTo] = useState(null);
   const navigate = useNavigate();
-  const { currentUser, setCurrentUser } = useContext(authContext);
+  const { currentUser, setCurrentUser, setFetch, fetch } =
+    useContext(authContext);
+
   useEffect(() => {
     api.getAll("/users/" + post.user._id).then((res) => setUser(res));
   }, [post?.user._id, post.likes]);
@@ -62,6 +64,7 @@ const PostCard = ({ post }) => {
         });
     }
     setLike(isLiked ? like - 1 : like + 1);
+    setFetch(!fetch);
   };
 
   const handleSave = (userId, postId) => {

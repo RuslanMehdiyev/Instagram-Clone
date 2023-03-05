@@ -5,13 +5,12 @@ import { authContext } from "../../context/AuthContext";
 import PropagateLoader from "react-spinners/PropagateLoader";
 import ProfileCard from "../../components/cards/ProfileCard";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import "../profile/profile.css";
-import { Dialog, Modal, Typography } from "@mui/material";
+import { Dialog } from "@mui/material";
 import { Box } from "@mui/system";
-import PostsCard from "../../components/cards/PostsCard";
+import "../profile/profile.css";
 function Explore() {
   const [posts, setPosts] = useState(null);
-  const { currentUser } = useContext(authContext);
+  const { currentUser, fetch } = useContext(authContext);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [post, setPost] = useState({});
@@ -24,7 +23,7 @@ function Explore() {
       })
       .catch((err) => console.log(err))
       .finally(() => setLoading(false));
-  }, [currentUser?._id]);
+  }, [currentUser?._id, fetch]);
 
   const handleOpen = (item) => {
     setPost(item);
@@ -36,12 +35,12 @@ function Explore() {
   };
   return (
     <>
-      <div className="profile-page" style={{ marginTop: "0" }}>
-        <div className="profile-body" style={{ borderTop: "none" }}>
-          {loading ? (
-            <PropagateLoader color="#36d7b7" />
-          ) : (
-            posts && (
+      {loading ? (
+        <PropagateLoader color="#36d7b7" />
+      ) : (
+        <div className="profile-page" style={{ marginTop: "0" }}>
+          <div className="profile-body" style={{ borderTop: "none" }}>
+            {posts && (
               <div className="profile-post-grid">
                 {posts
                   .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
@@ -59,20 +58,20 @@ function Explore() {
                     </div>
                   ))}
               </div>
-            )
-          )}
-          <Dialog
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-          >
-            <Box>
-              <PostCard post={post} />
-            </Box>
-          </Dialog>
+            )}
+            <Dialog
+              open={open}
+              onClose={handleClose}
+              aria-labelledby="modal-modal-title"
+              aria-describedby="modal-modal-description"
+            >
+              <Box>
+                <PostCard post={post} />
+              </Box>
+            </Dialog>
+          </div>
         </div>
-      </div>
+      )}
     </>
   );
 }
