@@ -1,19 +1,34 @@
-import { useState } from "react";
-import { Box, Button, IconButton, TextField, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
+import {
+  Avatar,
+  Box,
+  Button,
+  IconButton,
+  TextField,
+  Typography,
+} from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
+import { useNavigate } from "react-router-dom";
 
-export const Comment = ({ comment, onLike, onReply }) => {
+export const Comment = ({ comment, onLike, currentUser }) => {
   const [isLiked, setIsLiked] = useState(false);
+  const [isReplyLiked, setReplyIsLiked] = useState(false);
   const [showReplyForm, setShowReplyForm] = useState(false);
   const [replyText, setReplyText] = useState("");
   const [replies, setReplies] = useState(comment.replies || []);
-
+  const navigate = useNavigate();
   const handleLike = () => {
-    onLike(comment.id);
     setIsLiked(!isLiked);
+    onLike(comment._id, isLiked);
   };
+  useEffect(() => {
+    setIsLiked(comment.likes.some((like) => like._id === currentUser._id));
+  }, []);
 
+  const handleReplyLike = () => {
+    setReplyIsLiked(!isReplyLiked);
+  };
   const handleReply = () => {
     setShowReplyForm(!showReplyForm);
   };
@@ -35,32 +50,37 @@ export const Comment = ({ comment, onLike, onReply }) => {
   };
 
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      alignItems="flex-start"
-      mt="0.5rem"
-    >
+    <Box display="flex" flexDirection="column" alignItems="flex-start">
       <Box display="flex" alignItems="center" mb="0.5rem">
-        <Box mr="0.5rem">
-          <IconButton onClick={handleLike}>
-            {isLiked ? (
-              <FavoriteIcon color="error" />
-            ) : (
-              <FavoriteBorderOutlinedIcon />
-            )}
-          </IconButton>
-          <Typography variant="caption">
-            {comment.likes} {comment.likes > 1 ? "Likes" : "Like"}
-          </Typography>
-        </Box>
-        <Box mr="0.5rem">
-          <Typography variant="subtitle2">{comment.text}</Typography>
-        </Box>
-        <Box>
-          <Button variant="text" color="primary" onClick={handleReply}>
-            Reply
-          </Button>
+        <Avatar alt={comment.user.userName} src={comment.user.avatar} />
+        <Box ml="0.5rem">
+          <Box display={"flex"} flexDirection={"row"} gap="10px">
+            <b
+              style={{ cursor: "pointer" }}
+              onClick={() => navigate("/profile/" + comment.user._id)}
+            >
+              {comment.user.userName}
+            </b>
+            <Typography variant="body2">{comment.comment}</Typography>
+          </Box>
+          <Box display="flex" alignItems="center">
+            <IconButton onClick={handleLike}>
+              {isLiked ? (
+                <FavoriteIcon color="error" />
+              ) : (
+                <FavoriteBorderOutlinedIcon />
+              )}
+            </IconButton>
+            <Typography variant="caption">
+              {comment.likes.length}{" "}
+              {comment.likes.length === 1 ? "Like" : "Likes"}
+            </Typography>
+            <Box>
+              <Button variant="text" color="primary" onClick={handleReply}>
+                Reply
+              </Button>
+            </Box>
+          </Box>
         </Box>
       </Box>
       {replies.map((reply) => (
@@ -72,8 +92,12 @@ export const Comment = ({ comment, onLike, onReply }) => {
           ml="1rem"
         >
           <Box mr="0.5rem">
-            <IconButton>
-              <FavoriteBorderOutlinedIcon />
+            <IconButton onClick={handleReplyLike}>
+              {isReplyLiked ? (
+                <FavoriteIcon color="error" />
+              ) : (
+                <FavoriteBorderOutlinedIcon />
+              )}
             </IconButton>
             <Typography variant="caption">
               {reply.likes} {reply.likes > 1 ? "Likes" : "Like"}
@@ -102,35 +126,5 @@ export const Comment = ({ comment, onLike, onReply }) => {
         </Box>
       )}
     </Box>
-  );
-};
-
-export const CommentForm = ({ onSubmit }) => {
-  const [text, setText] = useState("");
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (text.trim().length == 0) {
-      setText("");
-      return;
-    }
-    onSubmit(text);
-    setText("");
-  };
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <TextField
-        label="Add a comment..."
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        fullWidth
-        margin="normal"
-        required
-      />
-      <Button type="submit" variant="contained" color="primary">
-        Add
-      </Button>
-    </form>
   );
 };

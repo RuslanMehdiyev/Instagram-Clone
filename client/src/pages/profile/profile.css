@@ -82,8 +82,11 @@
   position: relative;
   border: none;
   cursor: pointer;
+  opacity: 0.6;
 }
-
+.profile-body .profile-nav-tabs > button.active {
+  opacity: 1;
+}
 .profile-body .profile-nav-tabs > button.active:after {
   content: "";
   background-color: #000;

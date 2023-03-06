@@ -2,10 +2,10 @@ import { Avatar, Button, Dialog } from "@mui/material";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import GridOnOutlinedIcon from "@mui/icons-material/GridOnOutlined";
-import BookmarkAddOutlinedIcon from "@mui/icons-material/BookmarkAddOutlined";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import BookmarkBorderOutlinedIcon from "@mui/icons-material/BookmarkBorderOutlined";
 import { useContext, useEffect, useState } from "react";
 import { authContext } from "../../context/AuthContext";
 import { useNavigate, useParams } from "react-router-dom";
@@ -244,7 +244,7 @@ function Profile() {
                     className={toggle ? "" : "active"}
                     onClick={() => setToggle(false)}
                   >
-                    <BookmarkAddOutlinedIcon />
+                    <BookmarkBorderOutlinedIcon />
                     <span>SAVED</span>
                   </button>
                 </div>

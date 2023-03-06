@@ -7,6 +7,8 @@ import {
   IconButton,
   Typography,
   Avatar,
+  TextField,
+  Button,
 } from "@mui/material";
 
 import FavoriteIcon from "@mui/icons-material/Favorite";
@@ -15,7 +17,7 @@ import BookmarkBorderOutlinedIcon from "@mui/icons-material/BookmarkBorderOutlin
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import { useContext, useEffect, useState } from "react";
 import { Box } from "@mui/system";
-import { Comment, CommentForm } from "../comments/Comment";
+import { Comment } from "../comments/Comment";
 import { api } from "../../network/api";
 import { useNavigate } from "react-router-dom";
 import { authContext } from "../../context/AuthContext";
@@ -25,8 +27,9 @@ const PostCard = ({ post }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [like, setLike] = useState(post.likes.length);
   const [isSaved, setIsSaved] = useState(false);
-  const [comments, setComments] = useState([]);
+  const [text, setText] = useState("");
   const [replyTo, setReplyTo] = useState(null);
+
   const navigate = useNavigate();
   const { currentUser, setCurrentUser, setFetch, fetch } =
     useContext(authContext);
@@ -84,16 +87,33 @@ const PostCard = ({ post }) => {
       .catch((err) => console.log(err));
   };
 
-  const handleCommentSubmit = (text) => {
-    const newComment = { id: comments.length + 1, text, likes: 0 };
-    setComments([...comments, newComment]);
+  const handleCommentSubmit = (event, text, postId) => {
+    event.preventDefault();
+    if (text.trim().length == 0) {
+      setText("");
+      return;
+    }
+    api
+      .update("/posts/" + postId + "/comments", {
+        userId: currentUser._id,
+        comment: text,
+      })
+      .then(() => {
+        setFetch(!fetch), setText("");
+      })
+      .catch((err) => console.log(err));
   };
 
-  const handleCommentLike = (id) => {
-    const newComments = comments.map((comment) =>
-      comment.id === id ? { ...comment, likes: comment.likes + 1 } : comment
-    );
-    setComments(newComments);
+  const handleCommentLike = (commentId, isLiked, postId) => {
+    console.log(isLiked);
+    const apiEndpoint = isLiked
+      ? `/posts/${postId}/comments/${commentId}/dislike`
+      : `/posts/${postId}/comments/${commentId}/like`;
+    api
+      .update(apiEndpoint, {
+        userId: currentUser._id,
+      })
+      .then(() => setFetch(!fetch));
   };
 
   const handleCommentReply = (id) => {
@@ -178,15 +198,31 @@ const PostCard = ({ post }) => {
           </CardContent>
         )}
         <CardContent>
-          {comments.map((comment) => (
-            <Comment
-              key={comment.id}
-              comment={comment}
-              onLike={handleCommentLike}
-              onReply={handleCommentReply}
+          {post.comments.length > 0 &&
+            post.comments.map((comment) => (
+              <Comment
+                key={comment._id}
+                comment={comment}
+                onLike={(commentId, isLiked) =>
+                  handleCommentLike(commentId, isLiked, post._id)
+                }
+                onReply={handleCommentReply}
+                currentUser={currentUser}
+              />
+            ))}
+          <form onSubmit={(e) => handleCommentSubmit(e, text, post._id)}>
+            <TextField
+              label="Add a comment..."
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              fullWidth
+              margin="normal"
+              required
             />
-          ))}
-          <CommentForm onSubmit={handleCommentSubmit} />
+            <Button type="submit" variant="contained" color="primary">
+              Add
+            </Button>
+          </form>
         </CardContent>
       </Card>
     </Box>

@@ -1,5 +1,61 @@
 const { default: mongoose, Schema } = require("mongoose");
 
+const commentSchema = new Schema(
+  {
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+    comment: {
+      type: String,
+    },
+    likes: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    replies: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Reply",
+      },
+    ],
+  },
+  { timestamps: true }
+);
+
+commentSchema.virtual("userName", {
+  ref: "User",
+  localField: "user",
+  foreignField: "_id",
+  justOne: true,
+  select: "userName",
+});
+
+const replySchema = new Schema(
+  {
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+    reply: {
+      type: String,
+      required: true,
+    },
+    likes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+  },
+  { timestamps: true }
+);
+
+const Comment = mongoose.model("Comment", commentSchema);
+const Reply = mongoose.model("Reply", replySchema);
+
 const postSchema = new Schema(
   {
     user: {
@@ -24,45 +80,11 @@ const postSchema = new Schema(
       type: Boolean,
       default: false,
     },
-    comments: [
-      {
-        user: {
-          type: Schema.Types.ObjectId,
-          ref: "User",
-        },
-        comment: {
-          type: String,
-        },
-        likes: [
-          {
-            type: Schema.Types.ObjectId,
-            ref: "User",
-          },
-        ],
-        replies: [
-          {
-            user: {
-              type: Schema.Types.ObjectId,
-              ref: "User",
-            },
-            reply: {
-              type: String,
-              required: true,
-            },
-            likes: [
-              {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "User",
-              },
-            ],
-          },
-        ],
-      },
-    ],
+    comments: [commentSchema],
   },
   { timestamps: true }
 );
 
-const Post = mongoose.model("Post", postSchema);
+const postModel = mongoose.model("Post", postSchema);
 
-module.exports = Post;
+module.exports = { Reply, Comment, postModel };

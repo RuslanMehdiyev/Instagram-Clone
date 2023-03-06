@@ -14,8 +14,11 @@ export const api = {
         response = res.data;
       })
       .catch((err) => {
-        localStorage.removeItem("user");
-        if (err.response?.status == 401) window.location.href = "/";
+        if (err.response?.status == 401) {
+          localStorage.removeItem("user");
+          window.location.href = "/";
+        }
+        throw err;
       });
     return response;
   },

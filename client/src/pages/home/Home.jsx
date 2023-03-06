@@ -6,7 +6,7 @@ import PropagateLoader from "react-spinners/PropagateLoader";
 
 function Home() {
   const [posts, setPosts] = useState(null);
-  const { currentUser } = useContext(authContext);
+  const { currentUser, fetch } = useContext(authContext);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     api
@@ -15,7 +15,7 @@ function Home() {
         setPosts(res.filter((a) => currentUser.following.includes(a.user._id)));
       })
       .finally(() => setLoading(false));
-  }, [currentUser?._id]);
+  }, [currentUser?._id, fetch]);
 
   return (
     <div>

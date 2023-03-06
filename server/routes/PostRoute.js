@@ -13,21 +13,18 @@ router.put("/:id/dislike", postController.dislike);
 
 // Comments routes
 router.put("/:id/comments", postController.comment);
-router.delete("/:id/comments/:commentIndex", postController.deleteComment);
-router.put("/:id/comments/:commentIndex/like", postController.likeComment);
-router.put(
-  "/:id/comments/:commentIndex/dislike",
-  postController.dislikeComment
-);
+router.delete("/:id/comments/:commentId", postController.deleteComment);
+router.put("/:id/comments/:commentId/like", postController.likeComment);
+router.put("/:id/comments/:commentId/dislike", postController.dislikeComment);
 
 // Reply to a comment
-router.post("/:id/comments/:commentIndex/replies", postController.reply);
+router.post("/:id/comments/:commentId/replies", postController.reply);
 router.post(
-  "/:id/comments/:commentIndex/replies/:replyIndex/like",
+  "/:id/comments/:commentId/replies/:replyId/like",
   postController.likeReply
 );
 router.post(
-  "/:id/comments/:commentIndex/replies/:replyIndex/dislike",
+  "/:id/comments/:commentId/replies/:replyId/dislike",
   postController.dislikeReply
 );
 
