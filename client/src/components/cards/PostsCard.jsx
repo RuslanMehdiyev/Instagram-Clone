@@ -28,7 +28,6 @@ const PostCard = ({ post }) => {
   const [like, setLike] = useState(post.likes.length);
   const [isSaved, setIsSaved] = useState(false);
   const [text, setText] = useState("");
-  const [replyTo, setReplyTo] = useState(null);
 
   const navigate = useNavigate();
   const { currentUser, setCurrentUser, setFetch, fetch } =
@@ -40,6 +39,7 @@ const PostCard = ({ post }) => {
 
   useEffect(() => {
     setIsLiked(post.likes.includes(currentUser._id));
+    console.log(post);
   }, []);
 
   useEffect(() => {
@@ -99,13 +99,13 @@ const PostCard = ({ post }) => {
         comment: text,
       })
       .then(() => {
-        setFetch(!fetch), setText("");
+        setFetch(!fetch);
+        setText("");
       })
       .catch((err) => console.log(err));
   };
 
   const handleCommentLike = (commentId, isLiked, postId) => {
-    console.log(isLiked);
     const apiEndpoint = isLiked
       ? `/posts/${postId}/comments/${commentId}/dislike`
       : `/posts/${postId}/comments/${commentId}/like`;
@@ -114,10 +114,6 @@ const PostCard = ({ post }) => {
         userId: currentUser._id,
       })
       .then(() => setFetch(!fetch));
-  };
-
-  const handleCommentReply = (id) => {
-    setReplyTo(id);
   };
 
   return (
@@ -198,7 +194,7 @@ const PostCard = ({ post }) => {
           </CardContent>
         )}
         <CardContent>
-          {post.comments.length > 0 &&
+          {post?.comments?.length > 0 &&
             post.comments.map((comment) => (
               <Comment
                 key={comment._id}
@@ -206,8 +202,8 @@ const PostCard = ({ post }) => {
                 onLike={(commentId, isLiked) =>
                   handleCommentLike(commentId, isLiked, post._id)
                 }
-                onReply={handleCommentReply}
                 currentUser={currentUser}
+                postId={post._id}
               />
             ))}
           <form onSubmit={(e) => handleCommentSubmit(e, text, post._id)}>

@@ -1,4 +1,7 @@
+const mongoose = require("mongoose");
+const { ObjectId } = mongoose.Types;
 const { postModel } = require("../models/Post");
+const userModel = require("../models/User");
 
 const postController = {
   getAll: (req, res) => {
@@ -10,8 +13,13 @@ const postController = {
         populate: [
           { path: "user", select: "_id userName avatar" },
           { path: "likes", select: "_id userName" },
-          { path: "replies.user", select: "_id userName" },
-          { path: "replies.likes", select: "_id userName" },
+          {
+            path: "replies",
+            populate: [
+              { path: "user", select: "_id userName avatar" },
+              { path: "likes", select: "_id userName" },
+            ],
+          },
         ],
       })
       .exec((err, posts) => {
@@ -114,10 +122,15 @@ const postController = {
         { $addToSet: { comments: comment } },
         { new: true }
       )
-      .populate("comments.user", "_id userName")
-      .populate("comments.likes", "_id userName")
-      .populate("comments.replies.user", "_id userName")
-      .populate("comments.replies.likes", "_id userName")
+      .populate({
+        path: "comments",
+        populate: [
+          { path: "user", select: "_id userName avatar" },
+          { path: "likes", select: "_id userName" },
+          { path: "replies.user", select: "_id userName avatar" },
+          { path: "replies.likes", select: "_id userName" },
+        ],
+      })
       .exec((err, doc) => {
         if (!err) res.json(doc);
         else res.status(500).json(err);
@@ -193,32 +206,52 @@ const postController = {
     const postId = req.params.id;
     const userId = req.body.userId;
     const commentId = req.params.commentId;
-    const reply = {
-      user: userId,
-      reply: req.body.reply,
-    };
 
-    postModel.findById(postId, (err, post) => {
-      if (err) {
-        res.status(500).json(err);
-      } else if (!post) {
-        res.status(404).json({ message: "Post not found" });
-      } else {
-        const comment = post.comments.id(commentId);
-        if (!comment) {
-          res.status(400).json({ message: "Invalid comment ID" });
-        } else {
-          comment.replies.push(reply);
-          post.save((err, doc) => {
-            if (err) {
-              res.status(500).json(err);
-            } else {
-              res.json(doc);
-            }
-          });
+    userModel
+      .findById(userId)
+      .then((user) => {
+        if (!user) {
+          return res.status(404).json({ message: "User not found" });
         }
-      }
-    });
+
+        const newReply = {
+          _id: new ObjectId(),
+          user: userId,
+          userName: user.userName,
+          avatar: user.avatar,
+          reply: req.body.reply,
+        };
+
+        return postModel.findById(postId).then((post) => {
+          if (!post) {
+            return res.status(404).json({ message: "Post not found" });
+          }
+
+          const comment = post.comments.id(commentId);
+          if (!comment) {
+            return res.status(400).json({ message: "Invalid comment ID" });
+          }
+
+          comment.replies.push(newReply);
+          return post.save().then(() => {
+            const response = {
+              postId: postId,
+              commentId: commentId,
+              reply: {
+                id: newReply._id,
+                userName: newReply.userName,
+                avatar: newReply.avatar,
+                reply: newReply.reply,
+              },
+            };
+            res.json(response);
+          });
+        });
+      })
+      .catch((err) => {
+        console.log("Error:", err);
+        res.status(500).json(err);
+      });
   },
   likeReply: (req, res) => {
     const { id, commentId, replyId } = req.params;

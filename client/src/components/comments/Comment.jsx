@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   Avatar,
   Box,
@@ -10,13 +10,15 @@ import {
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
 import { useNavigate } from "react-router-dom";
+import { api } from "../../network/api";
+import { authContext } from "../../context/AuthContext";
 
-export const Comment = ({ comment, onLike, currentUser }) => {
+export const Comment = ({ comment, onLike, currentUser, postId }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [isReplyLiked, setReplyIsLiked] = useState(false);
   const [showReplyForm, setShowReplyForm] = useState(false);
   const [replyText, setReplyText] = useState("");
-  const [replies, setReplies] = useState(comment.replies || []);
+  const { fetch, setFetch } = useContext(authContext);
   const navigate = useNavigate();
   const handleLike = () => {
     setIsLiked(!isLiked);
@@ -24,29 +26,45 @@ export const Comment = ({ comment, onLike, currentUser }) => {
   };
   useEffect(() => {
     setIsLiked(comment.likes.some((like) => like._id === currentUser._id));
+    comment.replies.forEach((reply) => {
+      reply.isLiked = reply.likes.some((like) => like._id === currentUser._id);
+    });
+    setReplyIsLiked(comment.replies.some((reply) => reply.isLiked));
   }, []);
 
-  const handleReplyLike = () => {
-    setReplyIsLiked(!isReplyLiked);
-  };
-  const handleReply = () => {
-    setShowReplyForm(!showReplyForm);
-  };
-
-  const handleReplySubmit = (e) => {
+  const handleReplySubmit = (e, commentId, postId) => {
     e.preventDefault();
+    console.log("commentId", commentId, "postId ", postId);
     if (replyText.trim().length == 0) {
       setReplyText("");
       return;
     }
-    const newReply = {
-      id: new Date().getTime(),
-      text: replyText,
-      likes: 0,
-    };
-    setReplies([...replies, newReply]);
-    setReplyText("");
-    setShowReplyForm(false);
+
+    api
+      .add(`/posts/${postId}/comments/${commentId}/replies`, {
+        reply: replyText,
+        userId: currentUser._id,
+      })
+      .then((res) => {
+        setFetch(!fetch);
+        setReplyText("");
+        setShowReplyForm(false);
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const handleReplyLike = (commentId, postId, replyId) => {
+    const apiEndpoint = isReplyLiked
+      ? `/posts/${postId}/comments/${commentId}/replies/${replyId}/dislike`
+      : `/posts/${postId}/comments/${commentId}/replies/${replyId}/like`;
+    api
+      .add(apiEndpoint, {
+        userId: currentUser._id,
+      })
+      .then(() => {
+        setReplyIsLiked(!isReplyLiked);
+        setFetch(!fetch);
+      });
   };
 
   return (
@@ -76,41 +94,60 @@ export const Comment = ({ comment, onLike, currentUser }) => {
               {comment.likes.length === 1 ? "Like" : "Likes"}
             </Typography>
             <Box>
-              <Button variant="text" color="primary" onClick={handleReply}>
+              <Button
+                variant="text"
+                color="primary"
+                onClick={() => setShowReplyForm(!showReplyForm)}
+              >
                 Reply
               </Button>
             </Box>
           </Box>
         </Box>
       </Box>
-      {replies.map((reply) => (
-        <Box
-          key={reply.id}
-          display="flex"
-          alignItems="center"
-          mb="0.5rem"
-          ml="1rem"
-        >
-          <Box mr="0.5rem">
-            <IconButton onClick={handleReplyLike}>
-              {isReplyLiked ? (
-                <FavoriteIcon color="error" />
-              ) : (
-                <FavoriteBorderOutlinedIcon />
-              )}
-            </IconButton>
-            <Typography variant="caption">
-              {reply.likes} {reply.likes > 1 ? "Likes" : "Like"}
-            </Typography>
+      {comment.replies.length > 0 &&
+        comment.replies.map((reply) => (
+          <Box
+            key={reply._id}
+            display="flex"
+            alignItems="center"
+            mb="0.5rem"
+            ml="1rem"
+          >
+            <Avatar alt={reply.user.userName} src={reply.user.avatar} />
+            <Box ml="0.5rem">
+              <Box display={"flex"} flexDirection={"row"} gap="10px">
+                <b
+                  style={{ cursor: "pointer" }}
+                  onClick={() => navigate("/profile/" + reply.user._id)}
+                >
+                  {reply.user.userName}
+                </b>
+                <Typography variant="body2">{reply.reply}</Typography>
+              </Box>
+              <Box display="flex" alignItems="center">
+                <IconButton
+                  onClick={() =>
+                    handleReplyLike(comment._id, postId, reply._id)
+                  }
+                >
+                  {isReplyLiked ? (
+                    <FavoriteIcon color="error" />
+                  ) : (
+                    <FavoriteBorderOutlinedIcon />
+                  )}
+                </IconButton>
+                <Typography variant="caption">
+                  {reply.likes.length}{" "}
+                  {reply.likes.length === 1 ? "Like" : "Likes"}
+                </Typography>
+              </Box>
+            </Box>
           </Box>
-          <Box mr="0.5rem">
-            <Typography variant="subtitle2">{reply.text}</Typography>
-          </Box>
-        </Box>
-      ))}
+        ))}
       {showReplyForm && (
         <Box mt="0.5rem">
-          <form onSubmit={handleReplySubmit}>
+          <form onSubmit={(e) => handleReplySubmit(e, comment._id, postId)}>
             <TextField
               label="Add a reply..."
               value={replyText}

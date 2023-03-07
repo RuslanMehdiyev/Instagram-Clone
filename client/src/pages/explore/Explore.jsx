@@ -45,30 +45,32 @@ function Explore() {
                 {posts
                   .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
                   .map((post) => (
-                    <div
-                      className="post-grid-item"
-                      key={post._id}
-                      onClick={() => handleOpen(post)}
-                    >
-                      <ProfileCard post={post} />
-                      <div className="icon-wrapper">
-                        <FavoriteIcon className="like-icon" />
-                        <b>{post.likes && post.likes.length}</b>
+                    <>
+                      <div
+                        className="post-grid-item"
+                        key={post._id}
+                        onClick={() => handleOpen(post)}
+                      >
+                        <ProfileCard post={post} />
+                        <div className="icon-wrapper">
+                          <FavoriteIcon className="like-icon" />
+                          <b>{post.likes && post.likes.length}</b>
+                        </div>
                       </div>
-                    </div>
+                    </>
                   ))}
+                <Dialog
+                  open={open}
+                  onClose={handleClose}
+                  aria-labelledby="modal-modal-title"
+                  aria-describedby="modal-modal-description"
+                >
+                  <Box>
+                    <PostCard post={post} />
+                  </Box>
+                </Dialog>
               </div>
             )}
-            <Dialog
-              open={open}
-              onClose={handleClose}
-              aria-labelledby="modal-modal-title"
-              aria-describedby="modal-modal-description"
-            >
-              <Box>
-                <PostCard post={post} />
-              </Box>
-            </Dialog>
           </div>
         </div>
       )}
