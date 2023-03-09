@@ -8,7 +8,7 @@ const imageController = {
         imageUrl = "";
       } else {
         const { filename } = req.file;
-        imageUrl = `http://localhost:8080/api/uploads/${filename}`;
+        imageUrl = `https://blooming-headland-23532.herokuapp.com/api/uploads/${filename}`;
       }
       const newImage = new Image({ imageUrl });
       const savedImage = await newImage.save();
