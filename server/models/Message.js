@@ -1,29 +1,19 @@
 const { default: mongoose, Schema } = require("mongoose");
 
-const chatMessageSchema = new Schema({
-  message: {
-    type: String,
-    required: true,
+const chatMessageSchema = new Schema(
+  {
+    conversationId: {
+      type: String,
+    },
+    sender: {
+      type: String,
+    },
+    text: {
+      type: String,
+    },
   },
-  sender: {
-    type: Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
-  },
-  recipient: {
-    type: Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-  isDeleted: {
-    type: Boolean,
-    default: false,
-  },
-});
+  { timestamps: true }
+);
 
 const ChatMessage = mongoose.model("ChatMessage", chatMessageSchema);
 

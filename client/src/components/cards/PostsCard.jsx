@@ -21,8 +21,9 @@ import { Comment } from "../comments/Comment";
 import { api } from "../../network/api";
 import { useNavigate } from "react-router-dom";
 import { authContext } from "../../context/AuthContext";
+import TimeAgo from "react-timeago";
 
-const PostCard = ({ post }) => {
+const PostCard = ({ post, handleClose }) => {
   const [user, setUser] = useState([]);
   const [isLiked, setIsLiked] = useState(false);
   const [like, setLike] = useState(post.likes.length);
@@ -39,7 +40,6 @@ const PostCard = ({ post }) => {
 
   useEffect(() => {
     setIsLiked(post.likes.includes(currentUser._id));
-    console.log(post);
   }, []);
 
   useEffect(() => {
@@ -120,7 +120,10 @@ const PostCard = ({ post }) => {
     <Box mt={"1rem"} p="1rem" maxWidth={"500px"} margin={"0 auto"}>
       <Card>
         <CardHeader
-          onClick={() => navigate("/profile/" + user._id)}
+          onClick={() => {
+            navigate("/profile/" + user._id);
+            handleClose;
+          }}
           style={{ cursor: "pointer" }}
           avatar={
             <Avatar
@@ -133,6 +136,7 @@ const PostCard = ({ post }) => {
               {user.userName}
             </Typography>
           }
+          subheader={<TimeAgo date={post.createdAt} />}
         />
         <CardMedia
           style={{ width: "100%", height: "400px" }}
@@ -164,7 +168,6 @@ const PostCard = ({ post }) => {
                 <FavoriteBorderOutlinedIcon />
               )}
             </IconButton>
-
             <Typography>
               {like} {like > 1 ? "Likes" : "Like"}
             </Typography>
@@ -207,17 +210,24 @@ const PostCard = ({ post }) => {
               />
             ))}
           <form onSubmit={(e) => handleCommentSubmit(e, text, post._id)}>
-            <TextField
-              label="Add a comment..."
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              fullWidth
-              margin="normal"
-              required
-            />
-            <Button type="submit" variant="contained" color="primary">
-              Add
-            </Button>
+            <Box display={"flex"} alignItems={"center"}>
+              <TextField
+                label="Add a comment..."
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                fullWidth
+                margin="normal"
+                required
+              />
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                style={{ height: "56px", marginTop: "5px" }}
+              >
+                Add
+              </Button>
+            </Box>
           </form>
         </CardContent>
       </Card>

@@ -121,6 +121,7 @@ function Profile() {
   const handleClose = () => {
     setOpen(false);
     setDetailsOpen(false);
+    setFollowed(!followed);
   };
 
   const handleDialogOpen = (userList) => {
@@ -130,6 +131,17 @@ function Profile() {
 
   const handleDialogClose = () => {
     setDialogOpen(false);
+    setFollowed(!followed);
+  };
+
+  const createConversation = () => {
+    api
+      .add("/conversations", {
+        senderId: currentUser._id,
+        receiverId: user._id,
+      })
+      .then(() => navigate("/direct"))
+      .catch((err) => console.log(err));
   };
 
   return (
@@ -178,9 +190,7 @@ function Profile() {
                         <SettingsOutlinedIcon />
                       </button>
                     ) : (
-                      <button
-                      // onClick={createConversation}
-                      >
+                      <button onClick={createConversation}>
                         <MailOutlineIcon />
                       </button>
                     )}
@@ -320,7 +330,7 @@ function Profile() {
             aria-describedby="modal-modal-description"
           >
             <Box>
-              <PostCard post={post} />
+              <PostCard post={post} handleClose={handleClose} />
             </Box>
           </Dialog>
         </>

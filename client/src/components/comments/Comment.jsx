@@ -148,17 +148,24 @@ export const Comment = ({ comment, onLike, currentUser, postId }) => {
       {showReplyForm && (
         <Box mt="0.5rem">
           <form onSubmit={(e) => handleReplySubmit(e, comment._id, postId)}>
-            <TextField
-              label="Add a reply..."
-              value={replyText}
-              onChange={(e) => setReplyText(e.target.value)}
-              fullWidth
-              margin="normal"
-              required
-            />
-            <Button type="submit" variant="contained" color="primary">
-              Reply
-            </Button>
+            <Box display={"flex"} alignItems={"center"}>
+              <TextField
+                label="Add a reply..."
+                value={replyText}
+                onChange={(e) => setReplyText(e.target.value)}
+                fullWidth
+                margin="normal"
+                required
+              />
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                style={{ height: "56px", marginTop: "5px" }}
+              >
+                Reply
+              </Button>
+            </Box>
           </form>
         </Box>
       )}
