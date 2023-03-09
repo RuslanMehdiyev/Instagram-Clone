@@ -11,6 +11,7 @@ const messageRouter = require("./routes/MessageRoute");
 var jwt = require("jsonwebtoken");
 
 const cors = require("cors");
+const PORT = process.env.PORT || 8080;
 
 const app = express();
 app.use(express.json());
@@ -83,14 +84,14 @@ app.use("/api/upload", imageRouter);
 app.use("/api/conversations", converRouter);
 app.use("/api/message", messageRouter);
 
-server.listen(8080, () => {
-  console.log("listening on *:8080");
+server.listen(PORT, () => {
+  console.log(`listening on *:${PORT}`);
 });
 
 const io = require("socket.io")(server, {
   pingTimeout: 60000,
   cors: {
-    origin: ["http://127.0.0.1:5173"],
+    origin: ["https://ruso-insta.netlify.app", "http://127.0.0.1:5173"],
   },
 });
 
