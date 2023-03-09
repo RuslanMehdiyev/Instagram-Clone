@@ -17,14 +17,16 @@ import { api } from "../../network/api";
 
 const Messenger = () => {
   const [conversations, setConversations] = useState([]);
-  const [currentChat, setCurrentChat] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [arrivalMessage, setArrivalMessage] = useState(null);
+  const [onlineUsers, setOnlineUsers] = useState([]);
   const socket = useRef();
+
   const scrollRef = useRef();
 
-  const { currentUser } = useContext(authContext);
+  const { currentUser, currentChat, setCurrentChat, setSelectedConversation } =
+    useContext(authContext);
 
   useEffect(() => {
     socket.current = io("http://localhost:8080/");
@@ -51,6 +53,19 @@ const Messenger = () => {
       })
       .catch((err) => console.log(err));
   }, [currentUser?._id]);
+
+  useEffect(() => {
+    socket.current.emit("addUser", currentUser._id);
+    socket.current.on("getUsers", (users) => {
+      setOnlineUsers(
+        currentUser.following.filter((f) => users.some((u) => u.userId === f))
+      );
+    });
+    return () => {
+      setCurrentChat(null);
+      setSelectedConversation(null);
+    };
+  }, [currentUser]);
 
   useEffect(() => {
     api
@@ -88,12 +103,24 @@ const Messenger = () => {
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
-
   return (
-    <Box sx={{ flexGrow: 1 }} maxWidth={"60%"}>
+    <Box
+      sx={{
+        flexGrow: 1,
+        maxWidth: { xs: "90%", sm: "75%", md: "60%" },
+        marginTop: { xs: "40px", sm: 0 },
+        margin: "0 auto",
+      }}
+    >
       <Grid container spacing={2}>
         <Grid item xs={12} sm={4}>
-          <Paper sx={{ height: "calc(100vh - 40px)", overflow: "auto" }}>
+          <Paper
+            sx={{
+              height: { md: "calc(100vh - 40px)", xs: "100px", sm: "80%" },
+              overflow: "auto",
+              marginTop: { xs: "2rem", sm: "2rem", md: "10px" },
+            }}
+          >
             <List>
               <div>
                 {conversations?.map((c) => (
@@ -111,10 +138,17 @@ const Messenger = () => {
               height: "calc(100vh - 40px)",
               display: "flex",
               flexDirection: "column",
+              maxHeight: { xs: "70%", sm: "80%", md: "100%" },
+              marginTop: { sm: "2rem", md: "10px" },
             }}
           >
             <Box
-              sx={{ flexGrow: 1, p: 2, overflow: "auto" }}
+              sx={{
+                flexGrow: 1,
+                p: 2,
+                overflow: "auto",
+                height: { md: "calc(100vh - 40px)", xs: "100px", sm: "80%" },
+              }}
               display={"flex"}
               flexDirection={"column"}
               justifyContent={"space-between"}
@@ -135,7 +169,7 @@ const Messenger = () => {
                   </div>
                   <div className="chat-box-bottom">
                     <form onSubmit={handleSubmit}>
-                      <Box display="flex">
+                      <Box display="flex" mt={"10px"}>
                         <TextField
                           fullWidth
                           variant="outlined"

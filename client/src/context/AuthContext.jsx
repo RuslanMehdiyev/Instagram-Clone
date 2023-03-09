@@ -8,6 +8,8 @@ export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(
     JSON.parse(localStorage.getItem("user"))
   );
+  const [selectedConversation, setSelectedConversation] = useState(null);
+  const [currentChat, setCurrentChat] = useState(null);
 
   let value = {
     loginStatus,
@@ -16,6 +18,10 @@ export const AuthProvider = ({ children }) => {
     setCurrentUser,
     fetch,
     setFetch,
+    selectedConversation,
+    setSelectedConversation,
+    currentChat,
+    setCurrentChat,
   };
   return <authContext.Provider value={value}>{children}</authContext.Provider>;
 };

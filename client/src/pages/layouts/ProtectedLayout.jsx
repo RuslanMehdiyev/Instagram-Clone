@@ -14,7 +14,6 @@ function ProtectedLayout() {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            marginTop: "1rem",
           },
           "@media screen and (max-width: 770px)": { marginTop: "5rem" },
         }}

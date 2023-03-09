@@ -32,8 +32,15 @@ function Profile() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [userList, setUserList] = useState([]);
 
-  const { currentUser, setLoginStatus, setCurrentUser, fetch, setFetch } =
-    useContext(authContext);
+  const {
+    currentUser,
+    setLoginStatus,
+    setCurrentUser,
+    fetch,
+    setFetch,
+    setSelectedConversation,
+    setCurrentChat,
+  } = useContext(authContext);
   const navigate = useNavigate();
   const userId = useParams().id;
 
@@ -134,14 +141,27 @@ function Profile() {
     setFollowed(!followed);
   };
 
-  const createConversation = () => {
-    api
-      .add("/conversations", {
-        senderId: currentUser._id,
-        receiverId: user._id,
-      })
-      .then(() => navigate("/direct"))
-      .catch((err) => console.log(err));
+  const createConversation = async () => {
+    try {
+      const existingConversation = await api.getAll(
+        `/conversations/${currentUser._id}/${user._id}`
+      );
+      if (existingConversation) {
+        navigate(`/direct/`);
+        setSelectedConversation(existingConversation);
+        setCurrentChat(existingConversation);
+      } else {
+        const newConversation = await api.add("/conversations", {
+          senderId: currentUser._id,
+          receiverId: user._id,
+        });
+        navigate(`/direct/`);
+        setSelectedConversation(newConversation);
+        setCurrentChat(newConversation);
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (

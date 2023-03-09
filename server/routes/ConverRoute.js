@@ -5,7 +5,7 @@ const { conversationController } = require("../controllers/ConverController");
 router.post("/", conversationController.createConversation);
 router.get("/:userId", conversationController.getConversationByUserId);
 router.get(
-  "/find/:firstUserId/:secondUserId",
+  "/:firstUserId/:secondUserId",
   conversationController.getConversationByUserIds
 );
 
