@@ -6,6 +6,7 @@ import {
   Box,
   Grid,
   Typography,
+  CircularProgress,
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import Icon from "../../assets/images/instaicon.png";
@@ -17,10 +18,12 @@ import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
 import { api } from "../../network/api";
 import Copyright from "../../components/copyright/Copyright";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { authContext } from "../../context/AuthContext";
 
 export default function Login() {
+  const [loading, setLoading] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -33,6 +36,7 @@ export default function Login() {
   const navigate = useNavigate();
 
   const onSubmit = (data) => {
+    setLoading(true);
     api
       .add("/auth/login", data)
       .then((res) => {
@@ -40,6 +44,7 @@ export default function Login() {
         setCurrentUser(JSON.parse(localStorage.getItem("user")));
         navigate("confirm", { state: { userId: res._id } });
       })
+      .finally(() => setLoading(false))
       .catch((err) => {
         console.log("Err", err);
         toast.error(err.response?.data.message);
@@ -127,8 +132,10 @@ export default function Login() {
                 fullWidth
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
+                disabled={loading}
               >
-                Sign In
+                {loading && <CircularProgress size={15} />}
+                {!loading && "Sign In"}
               </Button>
               <Grid container>
                 <Grid item>

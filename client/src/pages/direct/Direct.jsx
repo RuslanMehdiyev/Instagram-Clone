@@ -76,6 +76,9 @@ const Messenger = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (newMessage.trim().length === 0) {
+      return;
+    }
     const message = {
       sender: currentUser._id,
       text: newMessage,

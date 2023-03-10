@@ -10,12 +10,14 @@ import {
   Divider,
   FormControl,
   TextField,
+  CircularProgress,
 } from "@mui/material";
 import { api } from "../../network/api";
 
 const CreatePost = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [caption, setCaption] = useState("");
   const user = JSON.parse(localStorage.getItem("user"));
   const navigate = useNavigate();
@@ -34,6 +36,7 @@ const CreatePost = () => {
     e.preventDefault();
     const formData = new FormData();
     formData.append("imageUrl", selectedFile);
+    setLoading(true);
     try {
       const res = await api.createPost("/upload", formData);
       const imageUrl = res.imageUrl;
@@ -43,6 +46,7 @@ const CreatePost = () => {
         image: imageUrl,
       };
       const createPostRes = await api.add("/posts", postData);
+      setLoading(false);
       navigate("/profile/" + createPostRes?.user);
     } catch (err) {
       console.error(err);
@@ -90,10 +94,11 @@ const CreatePost = () => {
         <Button
           variant="contained"
           color="primary"
-          disabled={!selectedFile}
+          disabled={!selectedFile || loading}
           onClick={handleSubmit}
         >
-          Post
+          {loading && <CircularProgress size={15} />}
+          {!loading && "Post"}
         </Button>
       </CardActions>
     </Card>

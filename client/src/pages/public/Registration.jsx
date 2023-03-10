@@ -6,6 +6,7 @@ import {
   Grid,
   Typography,
   Container,
+  CircularProgress,
 } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -15,8 +16,10 @@ import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
 import { api } from "../../network/api";
 import Copyright from "../../components/copyright/Copyright";
+import { useState } from "react";
 
 function Registration() {
+  const [loading, setLoading] = useState(false);
   const {
     register,
     handleSubmit,
@@ -32,7 +35,7 @@ function Registration() {
       toast.error("Passwords didn't match!");
       return;
     }
-
+    setLoading(true);
     api
       .add("/auth/register", {
         fullName: data.fullName,
@@ -44,8 +47,9 @@ function Registration() {
         toast.success(res.message);
         setTimeout(() => {
           navigate("/");
-        }, 2000);
+        }, 3000);
       })
+      .finally(() => setLoading(false))
       .catch((err) => toast.error(err.response?.data.message));
   };
 
@@ -137,8 +141,10 @@ function Registration() {
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
+            disabled={loading}
           >
-            Sign Up
+            {loading && <CircularProgress size={15} />}
+            {!loading && "Sign Up"}
           </Button>
           <Grid container>
             <Grid item xs>
