@@ -9,7 +9,7 @@ import { Dialog } from "@mui/material";
 import { Box } from "@mui/system";
 import "../profile/profile.css";
 function Explore() {
-  const [posts, setPosts] = useState(null);
+  const [posts, setPosts] = useState([]);
   const { currentUser, fetch } = useContext(authContext);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
@@ -22,7 +22,10 @@ function Explore() {
         setPosts(res.filter((a) => a.user._id !== currentUser._id));
       })
       .catch((err) => console.log(err))
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false);
+        console.log(posts);
+      });
   }, [currentUser?._id, fetch]);
 
   const handleOpen = (item) => {
@@ -40,7 +43,7 @@ function Explore() {
       ) : (
         <div className="profile-page" style={{ marginTop: "0" }}>
           <div className="profile-body" style={{ borderTop: "none" }}>
-            {posts && (
+            {posts.length > 0 ? (
               <div className="profile-post-grid">
                 {posts
                   .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
@@ -68,6 +71,11 @@ function Explore() {
                   </Box>
                 </Dialog>
               </div>
+            ) : (
+              <h2 style={{ textAlign: "center", marginTop: "4rem" }}>
+                The posts of all users will be displayed in this section as soon
+                as they add new content.
+              </h2>
             )}
           </div>
         </div>

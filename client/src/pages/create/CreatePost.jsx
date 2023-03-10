@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Button,
@@ -17,6 +18,7 @@ const CreatePost = () => {
   const [previewImage, setPreviewImage] = useState(null);
   const [caption, setCaption] = useState("");
   const user = JSON.parse(localStorage.getItem("user"));
+  const navigate = useNavigate();
 
   const handleFileInput = (e) => {
     const file = e.target.files[0];
@@ -30,10 +32,8 @@ const CreatePost = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const formData = new FormData();
     formData.append("imageUrl", selectedFile);
-
     try {
       const res = await api.createPost("/upload", formData);
       const imageUrl = res.imageUrl;
@@ -42,10 +42,8 @@ const CreatePost = () => {
         caption: caption,
         image: imageUrl,
       };
-
       const createPostRes = await api.add("/posts", postData);
-
-      console.log("Post created successfully:", createPostRes);
+      navigate("/profile/" + createPostRes?.user);
     } catch (err) {
       console.error(err);
     }
