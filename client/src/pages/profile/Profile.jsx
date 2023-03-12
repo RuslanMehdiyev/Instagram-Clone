@@ -205,11 +205,7 @@ function Profile() {
                       </Button>
                     )}
 
-                    {user?._id === currentUser?._id ? (
-                      <button>
-                        <SettingsOutlinedIcon />
-                      </button>
-                    ) : (
+                    {!user?._id === currentUser?._id && (
                       <button onClick={createConversation}>
                         <MailOutlineIcon />
                       </button>
