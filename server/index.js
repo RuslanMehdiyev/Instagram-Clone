@@ -29,8 +29,7 @@ app.use((req, res, next) => {
   if (
     req.url === "/api/auth/login" ||
     req.url === "/api/auth/confirm" ||
-    req.url === "/api/auth/register" ||
-    req.url.startsWith("/api/uploads/")
+    req.url === "/api/auth/register"
   ) {
     return next();
   }
