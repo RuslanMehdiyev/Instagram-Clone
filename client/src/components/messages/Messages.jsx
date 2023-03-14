@@ -43,7 +43,6 @@ const Message = ({ own, message, user, currentChat }) => {
             src={
               own ? user && user.avatar : receiverUser && receiverUser[0].avatar
             }
-            alt="Avatar"
           />
         </div>
         <Typography

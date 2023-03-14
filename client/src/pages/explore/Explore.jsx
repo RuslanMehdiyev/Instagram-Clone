@@ -24,7 +24,6 @@ function Explore() {
       .catch((err) => console.log(err))
       .finally(() => {
         setLoading(false);
-        console.log(posts);
       });
   }, [currentUser?._id, fetch]);
 
