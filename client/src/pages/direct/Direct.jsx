@@ -29,7 +29,7 @@ const Messenger = () => {
     useContext(authContext);
 
   useEffect(() => {
-    socket.current = io("https://blooming-headland-23532.herokuapp.com/");
+    socket.current = io("https://starfish-app-h9mfo.ondigitalocean.app/");
     socket.current.on("getMessage", (data) => {
       setArrivalMessage({
         sender: data.senderId,
